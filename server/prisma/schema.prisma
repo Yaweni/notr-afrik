@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users & Auth ────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  phone         String?
+  role          String   @default("customer") // customer | admin | staff
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  procedures    Procedure[]
+  enrollments   Enrollment[]
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Travel Destinations ─────────────────────────────────────────
+
+model Destination {
+  id          String   @id @default(cuid())
+  name        String        // e.g. "Canada", "Germany", "France"
+  code        String   @unique // e.g. "CA", "DE", "FR"
+  flagUrl     String?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  procedures     Procedure[]
+  languageCourses LanguageCourse[]
+}
+
+// ─── Immigration Procedures ──────────────────────────────────────
+
+model ProcedureType {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "Student Visa", "Work Permit", "Tourist Visa", "Family Reunification"
+  description String?
+  price       Float
+  currency    String   @default("XAF")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  procedures Procedure[]
+}
+
+model Procedure {
+  id              String   @id @default(cuid())
+  userId          String
+  procedureTypeId String
+  destinationId   String
+  status          String   @default("pending") // pending | documents_review | in_progress | approved | rejected | completed
+  agreedPrice     Float    @default(0)
+  currency        String   @default("XAF")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  procedureType ProcedureType @relation(fields: [procedureTypeId], references: [id])
+  destination   Destination   @relation(fields: [destinationId], references: [id])
+  updates       ProcedureUpdate[]
+  documents     Document[]
+  payments      Payment[]
+}
+
+model ProcedureUpdate {
+  id          String   @id @default(cuid())
+  procedureId String
+  title       String
+  message     String
+  createdAt   DateTime @default(now())
+
+  procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  procedureId String
+  name        String
+  fileUrl     String
+  fileType    String
+  uploadedAt  DateTime @default(now())
+
+  procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  procedureId String
+  amount      Float
+  currency    String   @default("XAF")
+  note        String?
+  paidAt      DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+
+  @@index([procedureId])
+}
+
+// ─── Language Courses ────────────────────────────────────────────
+
+model LanguageCourse {
+  id            String   @id @default(cuid())
+  destinationId String
+  language      String   // e.g. "English", "German", "French"
+  level         String   // A1, A2, B1, B2, C1, C2
+  title         String
+  description   String?
+  schedule      String?  // e.g. "Mon-Wed-Fri 9:00-11:00"
+  price         Float
+  currency      String   @default("XAF")
+  maxStudents   Int      @default(30)
+  startDate     DateTime
+  endDate       DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  destination Destination  @relation(fields: [destinationId], references: [id])
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id             String   @id @default(cuid())
+  userId         String
+  courseId        String
+  status         String   @default("enrolled") // enrolled | in_progress | completed | dropped
+  enrolledAt     DateTime @default(now())
+  completedAt    DateTime?
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course LanguageCourse @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+// ─── Notifications ───────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info") // info | success | warning | procedure | course
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Site Content (Admin-managed) ────────────────────────────────
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "hero_title", "mission_statement", "about_text"
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  country   String?
+  message   String
+  avatarUrl String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model SuccessStory {
+  id          String   @id @default(cuid())
+  title       String
+  summary     String
+  content     String
+  imageUrl    String?
+  destination String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
