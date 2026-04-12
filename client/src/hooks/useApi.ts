@@ -1,6 +1,36 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../lib/api";
-import type { Destination, ProcedureType, Procedure, LanguageCourse, Enrollment, Notification, Testimonial, SuccessStory, AdminStats, AdminFinanceSnapshot, AdminUserRow } from "../types";
+import type { Destination, ProcedureType, Procedure, LanguageCourse, Enrollment, Notification, Testimonial, SuccessStory, AdminStats, AdminFinanceSnapshot, AdminUserRow, ProfileDocument, ProfileDocumentCategory } from "../types";
+
+// ─── Profile Documents ───────────────────────────────────────────
+
+export function useProfileDocuments() {
+  return useQuery<ProfileDocument[]>({
+    queryKey: ["profileDocuments"],
+    queryFn: () => api.get("/auth/me/profile-documents").then((response) => response.data),
+  });
+}
+
+export function useCreateProfileDocument() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { name: string; category: ProfileDocumentCategory; fileUrl: string; notes?: string; fileType?: string }) =>
+      api.post("/auth/me/profile-documents", data).then((response) => response.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["profileDocuments"] });
+    },
+  });
+}
+
+export function useDeleteProfileDocument() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/auth/me/profile-documents/${id}`).then((response) => response.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["profileDocuments"] });
+    },
+  });
+}
 
 // ─── Destinations ─────────────────────────────────────────────────
 

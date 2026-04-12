@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Download, FileText, Users, Wallet } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, CheckCircle2, Download, FileText, Users, Wallet } from "lucide-react";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../../components/LoadingSpinner";
-import { useI18n } from "../../context/LanguageContext";
-import { useAdminFinance } from "../../hooks/useApi";
-import api from "../../lib/api";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import StatusBadge from "@/components/StatusBadge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useI18n } from "@/context/LanguageContext";
+import { useAdminFinance } from "@/hooks/useApi";
+import api from "@/lib/api";
+import type { ProcedureStatus } from "@/types";
 
 export default function AdminFinancePage() {
   const { data, isLoading } = useAdminFinance();
@@ -29,6 +34,7 @@ export default function AdminFinancePage() {
         client: "Client",
         procedures: "Dossiers",
         paid: "Paye",
+        status: "Statut",
         lastPayment: "Dernier paiement",
         noPaymentYet: "Aucun paiement",
         openProcedureBalances: "Soldes dossiers ouverts",
@@ -55,6 +61,7 @@ export default function AdminFinancePage() {
         client: "Client",
         procedures: "Procedures",
         paid: "Paid",
+        status: "Status",
         lastPayment: "Last Payment",
         noPaymentYet: "No payment yet",
         openProcedureBalances: "Open Procedure Balances",
@@ -90,129 +97,196 @@ export default function AdminFinancePage() {
   if (!data) return null;
 
   const currency = data.procedures[0]?.currency ?? data.clients[0]?.currency ?? "XAF";
+  const openBalances = data.procedures.filter((procedure) => procedure.remainingBalance > 0);
+  const recentPayments = data.payments.slice(0, 12);
+
   const cards = [
-    { icon: Wallet, label: copy.contractValue, value: formatCurrency(data.overview.totalContractValue, currency), color: "bg-slate-100 text-slate-700" },
-    { icon: CheckCircle2, label: copy.collected, value: formatCurrency(data.overview.totalCollected, currency), color: "bg-emerald-100 text-emerald-700" },
-    { icon: AlertTriangle, label: copy.outstanding, value: formatCurrency(data.overview.totalOutstanding, currency), color: "bg-amber-100 text-amber-700" },
-    { icon: FileText, label: copy.recordedPayments, value: formatNumber(data.overview.paymentCount), color: "bg-blue-100 text-blue-700" },
-    { icon: Users, label: copy.clientsWithBalance, value: formatNumber(data.overview.customersWithBalance), color: "bg-rose-100 text-rose-700" },
+    {
+      icon: Wallet,
+      label: copy.contractValue,
+      value: formatCurrency(data.overview.totalContractValue, currency),
+      gradient: "from-slate-500/20 via-slate-600/10 to-transparent",
+      iconBg: "bg-slate-500/15",
+      iconColor: "text-slate-700 dark:text-slate-300",
+    },
+    {
+      icon: CheckCircle2,
+      label: copy.collected,
+      value: formatCurrency(data.overview.totalCollected, currency),
+      gradient: "from-emerald-500/20 via-emerald-600/10 to-transparent",
+      iconBg: "bg-emerald-500/15",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      icon: AlertTriangle,
+      label: copy.outstanding,
+      value: formatCurrency(data.overview.totalOutstanding, currency),
+      gradient: "from-primary/20 via-primary/10 to-transparent",
+      iconBg: "bg-primary/15",
+      iconColor: "text-primary",
+    },
+    {
+      icon: FileText,
+      label: copy.recordedPayments,
+      value: formatNumber(data.overview.paymentCount),
+      gradient: "from-blue-500/20 via-blue-600/10 to-transparent",
+      iconBg: "bg-blue-500/15",
+      iconColor: "text-blue-600 dark:text-blue-400",
+    },
+    {
+      icon: Users,
+      label: copy.clientsWithBalance,
+      value: formatNumber(data.overview.customersWithBalance),
+      gradient: "from-violet-500/20 via-violet-600/10 to-transparent",
+      iconBg: "bg-violet-500/15",
+      iconColor: "text-violet-600 dark:text-violet-400",
+    },
   ];
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="font-heading text-2xl font-semibold text-gray-900">{copy.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">{copy.subtitle}</p>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+            <ArrowUpRight className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-foreground">{copy.title}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{copy.subtitle}</p>
+          </div>
         </div>
-        <button onClick={handleExport} disabled={isExporting} className="btn-primary inline-flex items-center gap-2">
+
+        <Button onClick={handleExport} disabled={isExporting} className="self-start xl:self-auto">
           <Download className="w-4 h-4" />
           {isExporting ? copy.exporting : copy.exportCsv}
-        </button>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        {cards.map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="card flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
-              <Icon className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900">{value}</div>
-              <div className="text-sm text-gray-500">{label}</div>
-            </div>
-          </div>
+        {cards.map(({ icon: Icon, label, value, gradient, iconBg, iconColor }) => (
+          <Card
+            key={label}
+            className="group relative overflow-hidden border-border shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-60`} />
+            <CardContent className="relative flex items-start justify-between gap-4 p-6">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-muted-foreground">{label}</p>
+                <p className="mt-1 font-heading text-3xl font-bold tracking-tight text-foreground">{value}</p>
+              </div>
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${iconBg}`}>
+                <Icon className={`h-6 w-6 ${iconColor}`} />
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-heading text-lg font-semibold text-gray-900">{copy.clientBalances}</h3>
-          <span className="text-sm text-gray-400">{formatNumber(data.clients.length)} {copy.clients}</span>
+      <Card className="overflow-hidden">
+        <div className="flex flex-col gap-2 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-heading text-base font-semibold text-foreground">{copy.clientBalances}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{formatNumber(data.clients.length)} {copy.clients}</p>
+          </div>
+          <Badge variant="outline" className="self-start sm:self-auto">{formatNumber(data.overview.customersWithBalance)} {copy.clientsWithBalance}</Badge>
         </div>
-        <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="min-w-[940px] w-full text-sm">
             <thead>
-              <tr className="text-left text-gray-500 border-b">
-                <th className="pb-3 font-medium">{copy.client}</th>
-                <th className="pb-3 font-medium">{copy.procedures}</th>
-                <th className="pb-3 font-medium">{copy.contractValue}</th>
-                <th className="pb-3 font-medium">{copy.paid}</th>
-                <th className="pb-3 font-medium">{copy.outstanding}</th>
-                <th className="pb-3 font-medium">{copy.lastPayment}</th>
+              <tr className="border-b border-border bg-muted/40 text-left">
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.client}</th>
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.procedures}</th>
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.contractValue}</th>
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.paid}</th>
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.outstanding}</th>
+                <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.lastPayment}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
-              {data.clients.map((client) => (
-                <tr key={client.userId} className="hover:bg-gray-50 align-top">
-                  <td className="py-3">
-                    <div className="font-medium text-gray-900">{client.firstName} {client.lastName}</div>
-                    <div className="text-xs text-gray-400 mt-1">{client.email}</div>
+            <tbody>
+              {data.clients.map((client, index) => (
+                <tr
+                  key={client.userId}
+                  className={`align-top transition-colors hover:bg-muted/20 ${index !== data.clients.length - 1 ? "border-b border-border" : ""}`}
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-foreground">{client.firstName} {client.lastName}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{client.email}</div>
                   </td>
-                  <td className="py-3 text-gray-500">{client.procedureCount}</td>
-                  <td className="py-3 text-gray-500">{formatCurrency(client.totalContractValue, client.currency)}</td>
-                  <td className="py-3 text-gray-500">{formatCurrency(client.totalPaid, client.currency)}</td>
-                  <td className="py-3 font-medium text-amber-700">{formatCurrency(client.totalOutstanding, client.currency)}</td>
-                  <td className="py-3 text-gray-400">{client.lastPaymentAt ? formatDate(client.lastPaymentAt) : copy.noPaymentYet}</td>
+                  <td className="px-6 py-4 font-medium text-foreground">{formatNumber(client.procedureCount)}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{formatCurrency(client.totalContractValue, client.currency)}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{formatCurrency(client.totalPaid, client.currency)}</td>
+                  <td className="px-6 py-4 font-medium text-amber-700 dark:text-amber-300">{formatCurrency(client.totalOutstanding, client.currency)}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{client.lastPaymentAt ? formatDate(client.lastPaymentAt) : copy.noPaymentYet}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       <div className="grid gap-8 xl:grid-cols-[1fr,1.1fr]">
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-lg font-semibold text-gray-900">{copy.openProcedureBalances}</h3>
-            <span className="text-sm text-gray-400">{formatNumber(data.procedures.filter((procedure) => procedure.remainingBalance > 0).length)} {copy.openBalances}</span>
+        <Card className="overflow-hidden">
+          <div className="flex flex-col gap-2 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-heading text-base font-semibold text-foreground">{copy.openProcedureBalances}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{formatNumber(openBalances.length)} {copy.openBalances}</p>
+            </div>
           </div>
-          <div className="card overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-[760px] w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 border-b">
-                  <th className="pb-3 font-medium">{copy.procedure}</th>
-                  <th className="pb-3 font-medium">{copy.client}</th>
-                  <th className="pb-3 font-medium">{copy.paid}</th>
-                  <th className="pb-3 font-medium">{copy.outstanding}</th>
+                <tr className="border-b border-border bg-muted/40 text-left">
+                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.procedure}</th>
+                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.client}</th>
+                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.paid}</th>
+                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.outstanding}</th>
+                  <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.status}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {data.procedures.filter((procedure) => procedure.remainingBalance > 0).slice(0, 12).map((procedure) => (
-                  <tr key={procedure.procedureId} className="hover:bg-gray-50 align-top">
-                    <td className="py-3">
-                      <div className="font-medium text-gray-900">{procedure.procedureTypeName}</div>
-                      <div className="text-xs text-gray-400 mt-1">{procedure.destinationName}</div>
+              <tbody>
+                {openBalances.slice(0, 12).map((procedure, index) => (
+                  <tr
+                    key={procedure.procedureId}
+                    className={`align-top transition-colors hover:bg-muted/20 ${index !== Math.min(openBalances.length, 12) - 1 ? "border-b border-border" : ""}`}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-foreground">{procedure.procedureTypeName}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">{procedure.destinationName}</div>
                     </td>
-                    <td className="py-3 text-gray-500">{procedure.client.firstName} {procedure.client.lastName}</td>
-                    <td className="py-3 text-gray-500">{formatCurrency(procedure.totalPaid, procedure.currency)}</td>
-                    <td className="py-3 font-medium text-amber-700">{formatCurrency(procedure.remainingBalance, procedure.currency)}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{procedure.client.firstName} {procedure.client.lastName}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{formatCurrency(procedure.totalPaid, procedure.currency)}</td>
+                    <td className="px-6 py-4 font-medium text-amber-700 dark:text-amber-300">{formatCurrency(procedure.remainingBalance, procedure.currency)}</td>
+                    <td className="px-6 py-4"><StatusBadge status={procedure.status as ProcedureStatus} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
 
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-lg font-semibold text-gray-900">{copy.recentPayments}</h3>
-            <span className="text-sm text-gray-400">{formatNumber(data.payments.length)} {copy.payments}</span>
+        <Card className="overflow-hidden">
+          <div className="flex flex-col gap-2 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-heading text-base font-semibold text-foreground">{copy.recentPayments}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{formatNumber(data.payments.length)} {copy.payments}</p>
+            </div>
           </div>
-          <div className="space-y-3">
-            {data.payments.slice(0, 12).map((payment) => (
-              <div key={payment.id} className="card flex items-start justify-between gap-4">
-                <div>
-                  <div className="font-semibold text-gray-900">{formatCurrency(payment.amount, payment.currency)}</div>
-                  <div className="text-sm text-gray-500 mt-1">{payment.client.firstName} {payment.client.lastName} · {payment.procedureTypeName} · {payment.destinationName}</div>
-                  <div className="text-xs text-gray-400 mt-2">{payment.receiptNumber} · {formatDate(payment.paidAt)}</div>
-                  {payment.note && <p className="text-sm text-gray-400 mt-2">{payment.note}</p>}
+          <div className="space-y-3 p-6">
+            {recentPayments.map((payment) => (
+              <div key={payment.id} className="rounded-2xl border border-border bg-background/70 p-4 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="font-heading text-xl font-semibold text-foreground">{formatCurrency(payment.amount, payment.currency)}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">{payment.client.firstName} {payment.client.lastName} · {payment.procedureTypeName} · {payment.destinationName}</div>
+                    <div className="mt-2 text-xs text-muted-foreground">{payment.receiptNumber} · {formatDate(payment.paidAt)}</div>
+                    {payment.note && <p className="mt-3 text-sm text-muted-foreground">{payment.note}</p>}
+                  </div>
+                  <Badge variant="success" className="self-start">{copy.offlinePayment}</Badge>
                 </div>
-                <div className="badge bg-emerald-100 text-emerald-700">{copy.offlinePayment}</div>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

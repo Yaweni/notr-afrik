@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { SignOptions } from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { getRouteParam } from "../lib/routeParams.js";
 import { authenticate } from "../middleware/auth.js";
 import type { AuthPayload } from "../middleware/auth.js";
 
@@ -14,11 +15,21 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 const ACCESS_TOKEN_OPTIONS: SignOptions = { expiresIn: JWT_EXPIRES_IN as SignOptions["expiresIn"] };
 const REFRESH_TOKEN_OPTIONS: SignOptions = { expiresIn: JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"] };
+const PROFILE_DOCUMENT_CATEGORIES = new Set(["cv", "identity", "education", "finance", "travel", "general"]);
 
 function generateTokens(payload: AuthPayload) {
   const accessToken = jwt.sign(payload, JWT_SECRET, ACCESS_TOKEN_OPTIONS);
   const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, REFRESH_TOKEN_OPTIONS);
   return { accessToken, refreshToken };
+}
+
+function isValidUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 // ── Register ──────────────────────────────────────────────────────
@@ -170,6 +181,164 @@ router.get("/me", authenticate, async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error("Get me error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/me/profile-documents", authenticate, async (req, res) => {
+  try {
+    const documents = await prisma.profileDocument.findMany({
+      where: { userId: req.user!.userId },
+      orderBy: { uploadedAt: "desc" },
+    });
+
+    res.json(documents);
+  } catch (error) {
+    console.error("Get profile documents error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/me/profile-documents", authenticate, async (req, res) => {
+  try {
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+    const fileUrl = typeof req.body.fileUrl === "string" ? req.body.fileUrl.trim() : "";
+    const category = typeof req.body.category === "string" ? req.body.category.trim().toLowerCase() : "general";
+    const fileType = typeof req.body.fileType === "string" && req.body.fileType.trim() ? req.body.fileType.trim() : "resource";
+    const notes = typeof req.body.notes === "string" && req.body.notes.trim() ? req.body.notes.trim() : undefined;
+
+    if (!name) {
+      res.status(400).json({ error: "Document name is required" });
+      return;
+    }
+
+    if (!fileUrl || !isValidUrl(fileUrl)) {
+      res.status(400).json({ error: "A valid document URL is required" });
+      return;
+    }
+
+    if (!PROFILE_DOCUMENT_CATEGORIES.has(category)) {
+      res.status(400).json({ error: "Invalid document category" });
+      return;
+    }
+
+    const document = await prisma.profileDocument.create({
+      data: {
+        userId: req.user!.userId,
+        name,
+        category,
+        fileUrl,
+        fileType,
+        notes,
+      },
+    });
+
+    res.status(201).json(document);
+  } catch (error) {
+    console.error("Create profile document error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/me/profile-documents/:id", authenticate, async (req, res) => {
+  try {
+    const documentId = getRouteParam(req.params.id);
+    if (!documentId) {
+      res.status(400).json({ error: "Document id is required" });
+      return;
+    }
+
+    const existing = await prisma.profileDocument.findFirst({
+      where: {
+        id: documentId,
+        userId: req.user!.userId,
+      },
+    });
+
+    if (!existing) {
+      res.status(404).json({ error: "Document not found" });
+      return;
+    }
+
+    await prisma.profileDocument.delete({ where: { id: documentId } });
+    res.json({ message: "Document deleted" });
+  } catch (error) {
+    console.error("Delete profile document error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/me", authenticate, async (req, res) => {
+  try {
+    const { firstName, lastName, phone } = req.body;
+
+    if (!firstName || !lastName) {
+      res.status(400).json({ error: "First name and last name are required" });
+      return;
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: {
+        firstName,
+        lastName,
+        phone: phone || null,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    res.json(user);
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/password", authenticate, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ error: "Current password and new password are required" });
+      return;
+    }
+
+    if (String(newPassword).length < 6) {
+      res.status(400).json({ error: "New password must be at least 6 characters" });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.user!.userId } });
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValid) {
+      res.status(400).json({ error: "Current password is incorrect" });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update password error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

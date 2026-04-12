@@ -1,7 +1,10 @@
-import { useNotifications, useMarkNotificationRead, useMarkAllRead } from "../hooks/useApi";
-import { useI18n } from "../context/LanguageContext";
-import { Bell, CheckCheck, Info, CheckCircle, AlertTriangle, FileText, BookOpen } from "lucide-react";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { AlertTriangle, Bell, BookOpen, CheckCheck, CheckCircle, FileText, Info, Sparkles } from "lucide-react";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/context/LanguageContext";
+import { useMarkAllRead, useMarkNotificationRead, useNotifications } from "@/hooks/useApi";
+import { cn } from "@/lib/utils";
 
 const typeIcon: Record<string, typeof Info> = {
   info: Info,
@@ -12,11 +15,11 @@ const typeIcon: Record<string, typeof Info> = {
 };
 
 const typeColor: Record<string, string> = {
-  info: "bg-blue-100 text-blue-600",
-  success: "bg-green-100 text-green-600",
-  warning: "bg-amber-100 text-amber-600",
-  procedure: "bg-purple-100 text-purple-600",
-  course: "bg-emerald-100 text-emerald-600",
+  info: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+  success: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  warning: "bg-primary/15 text-primary",
+  procedure: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+  course: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
 };
 
 export default function NotificationsPage() {
@@ -31,12 +34,14 @@ export default function NotificationsPage() {
         unread: "non lues",
         markAllRead: "Tout marquer comme lu",
         empty: "Aucune notification pour le moment.",
+        subtitle: "Retrouvez les mises a jour dossier, cours et bureau depuis une seule file.",
       }
     : {
         title: "Notifications",
         unread: "unread",
         markAllRead: "Mark all read",
         empty: "No notifications yet.",
+        subtitle: "Keep your case, course, and office updates visible in one queue.",
       };
 
   if (isLoading) return <LoadingSpinner />;
@@ -44,48 +49,73 @@ export default function NotificationsPage() {
   const unread = notifications?.filter((n) => !n.isRead).length ?? 0;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Bell className="w-6 h-6" /> {copy.title}
-          </h1>
-          <p className="text-gray-500 text-sm">{unread} {copy.unread}</p>
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+            <Bell className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-foreground">{copy.title}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{copy.subtitle}</p>
+          </div>
         </div>
-        {unread > 0 && (
-          <button onClick={() => markAllRead.mutate()} className="btn-secondary !py-2 !px-4 text-sm flex items-center gap-2">
-            <CheckCheck className="w-4 h-4" /> {copy.markAllRead}
-          </button>
-        )}
+
+        <div className="flex items-center gap-3">
+          <Badge variant={unread > 0 ? "warning" : "outline"} className={unread > 0 ? "border-primary/20 bg-primary/15 text-primary" : ""}>
+            {unread} {copy.unread}
+          </Badge>
+          {unread > 0 && (
+            <Button type="button" variant="outline" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}>
+              <CheckCheck className="h-4 w-4" />
+              {copy.markAllRead}
+            </Button>
+          )}
+        </div>
       </div>
 
       {notifications && notifications.length > 0 ? (
-        <div className="space-y-3">
-          {notifications.map((n) => {
-            const Icon = typeIcon[n.type] ?? Info;
-            const color = typeColor[n.type] ?? typeColor.info;
+        <div className="space-y-4">
+          {notifications.map((notification) => {
+            const Icon = typeIcon[notification.type] ?? Info;
+            const color = typeColor[notification.type] ?? typeColor.info;
+
             return (
               <div
-                key={n.id}
-                className={`card flex items-start gap-4 cursor-pointer ${!n.isRead ? "border-l-4 border-l-primary-500 bg-primary-50/30" : ""}`}
-                onClick={() => !n.isRead && markRead.mutate(n.id)}
+                key={notification.id}
+                className={cn(
+                  "group flex cursor-pointer gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                  !notification.isRead && "border-primary/30 bg-primary/5"
+                )}
+                onClick={() => !notification.isRead && markRead.mutate(notification.id)}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
-                  <Icon className="w-5 h-5" />
+                <div className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl", color)}>
+                  <Icon className="h-5 w-5" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-semibold text-gray-900 text-sm">{n.title}</h3>
-                    <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(n.createdAt)}</span>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground">{notification.title}</h3>
+                        {!notification.isRead && <span className="h-2 w-2 rounded-full bg-primary" />}
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{notification.message}</p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {formatDate(notification.createdAt)}
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">{n.message}</p>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="card text-center py-12 text-gray-400">{copy.empty}</div>
+        <div className="rounded-2xl border border-border bg-card px-6 py-14 text-center text-sm text-muted-foreground shadow-sm">
+          {copy.empty}
+        </div>
       )}
     </div>
   );

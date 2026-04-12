@@ -17,6 +17,21 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
+export type ProfileDocumentCategory = "cv" | "identity" | "education" | "finance" | "travel" | "general";
+
+export interface ProfileDocument {
+  id: string;
+  userId: string;
+  name: string;
+  category: ProfileDocumentCategory;
+  fileUrl: string;
+  fileType: string;
+  notes?: string | null;
+  uploadedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ─── Destination ──────────────────────────────────────────────────
 export interface Destination {
   id: string;

@@ -28,6 +28,7 @@ model User {
   procedures    Procedure[]
   enrollments   Enrollment[]
   notifications Notification[]
+  profileDocuments ProfileDocument[]
   refreshTokens RefreshToken[]
 }
 
@@ -110,6 +111,23 @@ model Document {
   uploadedAt  DateTime @default(now())
 
   procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+}
+
+model ProfileDocument {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  category   String   @default("general") // cv | identity | education | finance | travel | general
+  fileUrl    String
+  fileType   String   @default("resource")
+  notes      String?
+  uploadedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Payment {

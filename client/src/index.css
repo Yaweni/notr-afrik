@@ -2,63 +2,159 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+   CSS DESIGN TOKENS  (HSL, space-separated, no hsl() wrapper)
+   Light mode → dark mode
+──────────────────────────────────────────────────────────────── */
 @layer base {
+  :root {
+    --background:  210 20% 98%;
+    --foreground:  222 60% 8%;
+
+    --card:        0 0% 100%;
+    --card-foreground: 222 60% 8%;
+
+    --popover:     0 0% 100%;
+    --popover-foreground: 222 60% 8%;
+
+    /* Primary = amber-gold (Cameroon palette CTA) */
+    --primary:     43 96% 50%;
+    --primary-foreground: 222 60% 8%;
+
+    --secondary:   210 14% 94%;
+    --secondary-foreground: 222 47% 12%;
+
+    --muted:       210 14% 94%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent:      210 14% 94%;
+    --accent-foreground: 222 47% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border:      214 32% 91%;
+    --input:       214 32% 91%;
+    --ring:        43 96% 50%;
+
+    --radius:      0.75rem;
+
+    /* Sidebar for light mode */
+    --sidebar:              210 33% 99%;
+    --sidebar-foreground:   222 47% 12%;
+    --sidebar-primary:      43 96% 50%;
+    --sidebar-primary-foreground: 222 60% 8%;
+    --sidebar-accent:       210 22% 95%;
+    --sidebar-accent-foreground: 222 47% 12%;
+    --sidebar-border:       214 28% 88%;
+    --sidebar-ring:         43 96% 50%;
+  }
+
+  .dark {
+    --background:  222 84% 5%;
+    --foreground:  210 40% 96%;
+
+    --card:        222 60% 8%;
+    --card-foreground: 210 40% 96%;
+
+    --popover:     222 60% 8%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary:     43 96% 50%;
+    --primary-foreground: 222 84% 5%;
+
+    --secondary:   217 33% 15%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted:       217 33% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent:      217 33% 15%;
+    --accent-foreground: 210 40% 96%;
+
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border:      217 33% 18%;
+    --input:       217 33% 18%;
+    --ring:        43 96% 50%;
+
+    --sidebar:              222 84% 4%;
+    --sidebar-foreground:   215 20% 80%;
+    --sidebar-primary:      43 96% 50%;
+    --sidebar-primary-foreground: 222 84% 4%;
+    --sidebar-accent:       222 70% 9%;
+    --sidebar-accent-foreground: 215 20% 80%;
+    --sidebar-border:       222 60% 12%;
+    --sidebar-ring:         43 96% 50%;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(ellipse 80% 60% at 50% -10%,
+      hsl(43 96% 50% / 0.04) 0%, transparent 70%);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body {
+    background-image: radial-gradient(ellipse 80% 60% at 50% -10%,
+      hsl(43 96% 50% / 0.06) 0%, transparent 70%);
   }
 }
 
 @layer components {
+  /* ─── Buttons ─── */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl
-           hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-           transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold
+           bg-primary text-primary-foreground shadow-sm
+           hover:bg-primary/90 hover:shadow-md
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+           transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-white text-primary-700 font-semibold rounded-xl
-           border-2 border-primary-200 hover:border-primary-400 hover:bg-primary-50
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-           transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold
+           border border-border bg-card text-foreground
+           hover:bg-muted
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+           transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white font-semibold rounded-xl
-           hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
-           transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold
+           bg-destructive text-destructive-foreground
+           hover:bg-destructive/90
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+           transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
   }
 
+  /* ─── Card ─── */
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200;
+    @apply bg-card text-card-foreground rounded-2xl shadow-sm border border-border p-6
+           hover:shadow-md transition-all duration-200;
   }
 
+  /* ─── Input ─── */
   .input-field {
-    @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-           placeholder:text-gray-400 transition-all duration-200;
+    @apply flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm
+           ring-offset-background placeholder:text-muted-foreground
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
   }
 
+  /* ─── Status badges ─── */
   .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
   }
-
-  .badge-pending {
-    @apply badge bg-yellow-100 text-yellow-800;
-  }
-
-  .badge-in-progress {
-    @apply badge bg-blue-100 text-blue-800;
-  }
-
-  .badge-approved {
-    @apply badge bg-green-100 text-green-800;
-  }
-
-  .badge-rejected {
-    @apply badge bg-red-100 text-red-800;
-  }
-
-  .badge-completed {
-    @apply badge bg-emerald-100 text-emerald-800;
-  }
+  .badge-pending     { @apply badge bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300; }
+  .badge-in-progress { @apply badge bg-blue-100  text-blue-800  dark:bg-blue-900/30  dark:text-blue-300; }
+  .badge-approved    { @apply badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300; }
+  .badge-rejected    { @apply badge bg-red-100   text-red-800   dark:bg-red-900/30   dark:text-red-300; }
+  .badge-completed   { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300; }
 }
+

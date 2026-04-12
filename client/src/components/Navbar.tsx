@@ -19,6 +19,7 @@ export default function Navbar() {
   const { language, setLanguage, isFrench } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const portalHome = user?.role === "admin" || user?.role === "staff" ? "/admin" : "/dashboard";
 
   const { data: unread } = useUnreadCount(isAuthenticated && !isLoading);
   const unreadCount = isAuthenticated ? unread?.count ?? 0 : 0;
@@ -51,7 +52,8 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    setMobileOpen(false);
+    navigate("/", { replace: true });
   };
 
   const languageToggle = (
@@ -82,7 +84,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={isAuthenticated ? portalHome : "/"} className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cameroon-green to-cameroon-yellow flex items-center justify-center">
               <Globe className="w-5 h-5 text-white" />
             </div>
@@ -93,6 +95,8 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-1">
+            {!isAuthenticated && (
+              <>
             <Link to="/" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
               {copy.home}
             </Link>
@@ -105,6 +109,8 @@ export default function Navbar() {
             <Link to="/procedures" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
               {copy.services}
             </Link>
+              </>
+            )}
           </div>
 
           {/* Right side */}
@@ -165,12 +171,14 @@ export default function Navbar() {
             )}
 
             {/* Mobile menu toggle */}
-            <button
-              className="md:hidden p-2 text-gray-500 hover:bg-gray-50 rounded-lg"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            {!isAuthenticated && (
+              <button
+                className="md:hidden p-2 text-gray-500 hover:bg-gray-50 rounded-lg"
+                onClick={() => setMobileOpen(!mobileOpen)}
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            )}
           </div>
         </div>
       </div>
