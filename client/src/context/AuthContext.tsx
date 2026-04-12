@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "../lib/api";
 import type { User, AuthResponse } from "../types";
 
@@ -14,6 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     const refreshToken = localStorage.getItem("refreshToken");
     api.post("/auth/logout", { refreshToken }).catch(() => {});
+    queryClient.clear();
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setUser(null);

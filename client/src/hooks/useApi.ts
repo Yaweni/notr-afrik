@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../lib/api";
-import type { Destination, ProcedureType, Procedure, LanguageCourse, Enrollment, Notification, Testimonial, SuccessStory, AdminStats, AdminFinanceSnapshot } from "../types";
+import type { Destination, ProcedureType, Procedure, LanguageCourse, Enrollment, Notification, Testimonial, SuccessStory, AdminStats, AdminFinanceSnapshot, AdminUserRow } from "../types";
 
 // ─── Destinations ─────────────────────────────────────────────────
 
@@ -102,11 +102,12 @@ export function useNotifications() {
   });
 }
 
-export function useUnreadCount() {
+export function useUnreadCount(enabled = true) {
   return useQuery<{ count: number }>({
     queryKey: ["notifications", "unread"],
     queryFn: () => api.get("/notifications/unread-count").then((r) => r.data),
-    refetchInterval: 30000, // Poll every 30s
+    enabled,
+    refetchInterval: enabled ? 30000 : false,
   });
 }
 
@@ -173,7 +174,7 @@ export function useAdminFinance() {
 }
 
 export function useAdminUsers() {
-  return useQuery({
+  return useQuery<AdminUserRow[]>({
     queryKey: ["admin", "users"],
     queryFn: () => api.get("/admin/users").then((r) => r.data),
   });
@@ -207,6 +208,7 @@ export function useAddProcedurePayment() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["procedures"] });
       qc.invalidateQueries({ queryKey: ["admin", "procedures"] });
+      qc.invalidateQueries({ queryKey: ["admin", "finance"] });
       qc.invalidateQueries({ queryKey: ["admin", "stats"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -224,12 +226,5 @@ export function useAddProcedureDocument() {
       qc.invalidateQueries({ queryKey: ["admin", "stats"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
     },
-  });
-}
-
-export function useAdminEnrollments() {
-  return useQuery({
-    queryKey: ["admin", "enrollments"],
-    queryFn: () => api.get("/courses/enrollments/all").then((r) => r.data),
   });
 }

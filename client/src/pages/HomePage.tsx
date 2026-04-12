@@ -12,12 +12,105 @@ import {
   Shield,
 } from "lucide-react";
 import { useSiteContent, useTestimonials, useSuccessStories, useDestinations } from "../hooks/useApi";
+import { useI18n } from "../context/LanguageContext";
 
 export default function HomePage() {
   const { data: content } = useSiteContent();
   const { data: testimonials } = useTestimonials();
   const { data: stories } = useSuccessStories();
   const { data: destinations } = useDestinations();
+  const { isFrench, getLocalizedContent } = useI18n();
+
+  const copy = isFrench
+    ? {
+        heroBadge: "Le bureau immigration moderne du Cameroun",
+        heroTitle: "Votre projet de depart commence ici",
+        heroSubtitle: "Des parcours clairs, des etapes visibles et un accompagnement humain pour rendre l'immigration plus simple pour les voyageurs ambitieux.",
+        startJourney: "Commencer",
+        exploreDestinations: "Explorer les destinations",
+        stats: [
+          { num: "2,000+", label: "Visas reussis" },
+          { num: "6+", label: "Destinations" },
+          { num: "500+", label: "Etudiants en langue" },
+          { num: "95%", label: "Taux de reussite" },
+        ],
+        servicesTitle: "Tout pour voyager avec clarte",
+        servicesSubtitle: "Le bureau digital organise l'information, les documents, les cours et les etapes afin que chaque voyageur sache quoi faire ensuite.",
+        services: [
+          { icon: FileCheck, title: "Preparation visa", desc: "Visas etudiants, travail, tourisme et regroupement familial avec un parcours simple a suivre.", color: "from-blue-500 to-blue-600" },
+          { icon: GraduationCap, title: "Preparation linguistique", desc: "Anglais, francais, allemand et preparation aux examens lies au projet de depart.", color: "from-emerald-500 to-emerald-600" },
+          { icon: Globe, title: "Orientation destination", desc: "Une vue claire sur les pays, les exigences, les delais et les pieces a reunir.", color: "from-purple-500 to-purple-600" },
+          { icon: Shield, title: "Encadrement humain", desc: "Le systeme simplifie le parcours sans remplacer l'expertise juridique quand elle est necessaire.", color: "from-amber-500 to-amber-600" },
+        ],
+        destinationsTitle: "Destinations populaires",
+        destinationsSubtitle: "Explorez les pays les plus recherches par les aspirants voyageurs camerounais.",
+        learnMore: "Voir le parcours",
+        missionTitle: "Notre mission",
+        missionStatement: "Nous rendons la mobilite internationale plus simple, plus lisible et plus rassurante pour chaque candidat au depart.",
+        aboutText: "Depuis Douala, nous construisons un bureau immigration plus moderne: documents centralises, suivi clair, information fiable et interventions humaines au bon moment.",
+        missionBullets: [
+          "Information simple et fiable",
+          "Parcours transparent du debut a la fin",
+          "Preparation linguistique orientee resultat",
+          "Escalade vers un expert humain quand le dossier devient complexe",
+        ],
+        proudlyCameroonian: "Fierement camerounais",
+        since: "Au service de la communaute depuis 2015",
+        testimonialsTitle: "Ce que disent nos clients",
+        relocatedTo: "Installe en {country}",
+        storiesTitle: "Parcours de reussite",
+        ctaTitle: "Pret a lancer votre projet ?",
+        ctaText: "Le bon produit n'est pas un cabinet d'avocat automatise. C'est un bureau moderne qui explique, organise et rassure a chaque etape.",
+        createAccount: "Creer mon compte",
+        browseCourses: "Voir les cours",
+      }
+    : {
+        heroBadge: "Cameroon's modern immigration office",
+        heroTitle: "Your journey abroad starts here",
+        heroSubtitle: "Clear journeys, visible milestones, and human guidance that make immigration easier for aspiring travelers.",
+        startJourney: "Start Your Journey",
+        exploreDestinations: "Explore Destinations",
+        stats: [
+          { num: "2,000+", label: "Successful Visas" },
+          { num: "6+", label: "Destinations" },
+          { num: "500+", label: "Language Students" },
+          { num: "95%", label: "Success Rate" },
+        ],
+        servicesTitle: "Everything you need to travel with clarity",
+        servicesSubtitle: "The digital office organizes information, documents, courses, and milestones so every traveler knows the next step.",
+        services: [
+          { icon: FileCheck, title: "Visa Preparation", desc: "Student, work, tourist, and family journeys with a clear path to follow.", color: "from-blue-500 to-blue-600" },
+          { icon: GraduationCap, title: "Language Preparation", desc: "English, French, German, and exam prep tied to the destination journey.", color: "from-emerald-500 to-emerald-600" },
+          { icon: Globe, title: "Destination Guidance", desc: "A clear view of countries, requirements, timelines, and needed documents.", color: "from-purple-500 to-purple-600" },
+          { icon: Shield, title: "Human Oversight", desc: "The product simplifies the journey without pretending to replace legal expertise.", color: "from-amber-500 to-amber-600" },
+        ],
+        destinationsTitle: "Popular destinations",
+        destinationsSubtitle: "Explore the countries most requested by aspiring travelers from Cameroon.",
+        learnMore: "View journey",
+        missionTitle: "Our mission",
+        missionStatement: "We make international mobility simpler, clearer, and less intimidating for every aspiring traveler.",
+        aboutText: "From Douala, we are building a more modern immigration office: centralized documents, clear status tracking, reliable information, and human intervention at the right moment.",
+        missionBullets: [
+          "Simple and trustworthy information",
+          "Transparent journey from start to finish",
+          "Outcome-driven language preparation",
+          "Escalation to a human expert when the case becomes complex",
+        ],
+        proudlyCameroonian: "Proudly Cameroonian",
+        since: "Serving the community since 2015",
+        testimonialsTitle: "What our clients say",
+        relocatedTo: "Relocated to {country}",
+        storiesTitle: "Success stories",
+        ctaTitle: "Ready to launch your plan?",
+        ctaText: "The right product is not a fake immigration lawyer. It is a modern office that explains, organizes, and reassures at every step.",
+        createAccount: "Create Your Account",
+        browseCourses: "Browse Courses",
+      };
+
+  const heroTitle = getLocalizedContent(content, "hero_title", { en: copy.heroTitle, fr: copy.heroTitle });
+  const heroSubtitle = getLocalizedContent(content, "hero_subtitle", { en: copy.heroSubtitle, fr: copy.heroSubtitle });
+  const missionStatement = getLocalizedContent(content, "mission_statement", { en: copy.missionStatement, fr: copy.missionStatement });
+  const aboutText = getLocalizedContent(content, "about_text", { en: copy.aboutText, fr: copy.aboutText });
 
   return (
     <div className="min-h-screen">
@@ -29,34 +122,28 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
               <Plane className="w-4 h-4" />
-              Cameroon&apos;s #1 Immigration Partner
+              {copy.heroBadge}
             </div>
             <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-              {content?.hero_title || "Your Journey Abroad Starts Here"}
+              {heroTitle}
             </h1>
             <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-10 max-w-2xl">
-              {content?.hero_subtitle ||
-                "Expert visa processing, language training, and end-to-end immigration solutions for Cameroonians dreaming of a life abroad."}
+              {heroSubtitle}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-cameroon-yellow text-gray-900 font-bold rounded-xl hover:bg-yellow-400 transition-all shadow-lg hover:shadow-xl">
-                Start Your Journey
+                {copy.startJourney}
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link to="/destinations" className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/20">
-                Explore Destinations
+                {copy.exploreDestinations}
               </Link>
             </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-16 border-t border-white/10">
-            {[
-              { num: "2,000+", label: "Successful Visas" },
-              { num: "6+", label: "Destinations" },
-              { num: "500+", label: "Language Students" },
-              { num: "95%", label: "Success Rate" },
-            ].map((s) => (
+            {copy.stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-3xl md:text-4xl font-heading font-extrabold text-cameroon-yellow">{s.num}</div>
                 <div className="text-sm text-white/60 mt-1">{s.label}</div>
@@ -71,20 +158,15 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need to Travel
+              {copy.servicesTitle}
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              From visa applications to language preparation, we handle every step of your immigration journey.
+              {copy.servicesSubtitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { icon: FileCheck, title: "Visa Processing", desc: "Student, work, tourist, and family reunification visas for all major destinations.", color: "from-blue-500 to-blue-600" },
-              { icon: GraduationCap, title: "Language Courses", desc: "English, French, German — all levels from A1 to C2 with certified instructors.", color: "from-emerald-500 to-emerald-600" },
-              { icon: Globe, title: "Travel Guidance", desc: "End-to-end support from document prep to settling in your new country.", color: "from-purple-500 to-purple-600" },
-              { icon: Shield, title: "Expert Consulting", desc: "Personalized consulting to find the best immigration pathway for your goals.", color: "from-amber-500 to-amber-600" },
-            ].map(({ icon: Icon, title, desc, color }) => (
+            {copy.services.map(({ icon: Icon, title, desc, color }) => (
               <div key={title} className="card group hover:-translate-y-1 transition-all duration-300">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
                   <Icon className="w-6 h-6 text-white" />
@@ -103,10 +185,10 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Popular Destinations
+                {copy.destinationsTitle}
               </h2>
               <p className="text-gray-500 max-w-2xl mx-auto">
-                Discover your next chapter in these incredible countries.
+                {copy.destinationsSubtitle}
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -122,7 +204,7 @@ export default function HomePage() {
                   </div>
                   <p className="text-sm text-gray-500 leading-relaxed">{dest.description}</p>
                   <div className="mt-4 text-primary-600 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                    Learn more <ArrowRight className="w-4 h-4" />
+                    {copy.learnMore} <ArrowRight className="w-4 h-4" />
                   </div>
                 </Link>
               ))}
@@ -137,23 +219,16 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Our Mission
+                {copy.missionTitle}
               </h2>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {content?.mission_statement ||
-                  "We are committed to making international mobility accessible to every Cameroonian."}
+                {missionStatement}
               </p>
               <p className="text-gray-600 leading-relaxed mb-8">
-                {content?.about_text ||
-                  "Founded in Douala, our immigration office has helped thousands of Cameroonians successfully relocate."}
+                {aboutText}
               </p>
               <ul className="space-y-3">
-                {[
-                  "Transparent and honest guidance",
-                  "Affordable fees with no hidden costs",
-                  "Certified language instructors",
-                  "Partnerships with embassies worldwide",
-                ].map((item) => (
+                {copy.missionBullets.map((item) => (
                   <li key={item} className="flex items-center gap-3 text-gray-700">
                     <CheckCircle2 className="w-5 h-5 text-cameroon-green flex-shrink-0" />
                     {item}
@@ -165,8 +240,8 @@ export default function HomePage() {
               <div className="aspect-square rounded-3xl bg-gradient-to-br from-cameroon-green/10 via-cameroon-yellow/10 to-cameroon-red/10 flex items-center justify-center">
                 <div className="text-center p-8">
                   <div className="text-6xl mb-4">🇨🇲</div>
-                  <h3 className="font-heading text-2xl font-bold text-gray-900 mb-2">Proudly Cameroonian</h3>
-                  <p className="text-gray-500">Serving the community since 2015</p>
+                  <h3 className="font-heading text-2xl font-bold text-gray-900 mb-2">{copy.proudlyCameroonian}</h3>
+                  <p className="text-gray-500">{copy.since}</p>
                 </div>
               </div>
             </div>
@@ -180,7 +255,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                What Our Clients Say
+                {copy.testimonialsTitle}
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -198,7 +273,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-gray-900">{t.name}</div>
-                      {t.country && <div className="text-xs text-gray-400">Relocated to {t.country}</div>}
+                      {t.country && <div className="text-xs text-gray-400">{copy.relocatedTo.replace("{country}", t.country)}</div>}
                     </div>
                   </div>
                 </div>
@@ -214,7 +289,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Success Stories
+                {copy.storiesTitle}
               </h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
@@ -239,19 +314,19 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-primary-700 to-cameroon-green text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
-            Ready to Start Your Journey?
+            {copy.ctaTitle}
           </h2>
           <p className="text-white/80 text-lg mb-10 max-w-2xl mx-auto">
-            Join thousands of Cameroonians who have successfully achieved their dreams of traveling and living abroad.
+            {copy.ctaText}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-cameroon-yellow text-gray-900 font-bold rounded-xl hover:bg-yellow-400 transition-all shadow-lg">
-              Create Your Account
+              {copy.createAccount}
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link to="/courses" className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/20">
               <BookOpen className="w-5 h-5" />
-              Browse Courses
+              {copy.browseCourses}
             </Link>
           </div>
         </div>

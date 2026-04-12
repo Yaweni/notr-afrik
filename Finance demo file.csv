@@ -1,0 +1,3 @@
+receiptNumber,paidAt,amount,currency,clientName,clientEmail,clientPhone,procedureId,procedureType,destination,procedureStatus,note
+RCPT-20260409-3G93PY,2026-04-09T16:00:00.000Z,25000,XAF,Jean Nkoulou,jean@example.com,+237 677 123 456,cmmmeujbe0012c0gcf6gp5bx3,Student Visa,Canada,in_progress,Visual browser test payment recorded from admin screen.
+RCPT-20260409-GJUNHJ,2026-04-09T16:00:00.000Z,10000,XAF,Jean Nkoulou,jean@example.com,+237 677 123 456,cmmmeujbe0012c0gcf6gp5bx3,Student Visa,Canada,in_progress,Post-fix live refresh verification payment.

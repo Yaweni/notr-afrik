@@ -312,15 +312,11 @@ router.get("/stats", authenticate, requireRole("admin", "staff"), async (_req, r
       totalUsers,
       totalProcedures,
       pendingProcedures,
-      activeCourses,
-      totalEnrollments,
       recentProcedures,
     ] = await Promise.all([
       prisma.user.count({ where: { role: "customer" } }),
       prisma.procedure.count(),
       prisma.procedure.count({ where: { status: { in: ["pending", "documents_review", "in_progress"] } } }),
-      prisma.languageCourse.count({ where: { isActive: true } }),
-      prisma.enrollment.count(),
       prisma.procedure.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
@@ -336,8 +332,6 @@ router.get("/stats", authenticate, requireRole("admin", "staff"), async (_req, r
       totalUsers,
       totalProcedures,
       pendingProcedures,
-      activeCourses,
-      totalEnrollments,
       recentProcedures,
     });
   } catch (error) {
@@ -352,7 +346,7 @@ router.get("/users", authenticate, requireRole("admin"), async (_req, res) => {
       select: {
         id: true, email: true, firstName: true, lastName: true,
         phone: true, role: true, createdAt: true,
-        _count: { select: { procedures: true, enrollments: true } },
+        _count: { select: { procedures: true } },
       },
       orderBy: { createdAt: "desc" },
     });

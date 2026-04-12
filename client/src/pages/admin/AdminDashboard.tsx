@@ -1,26 +1,50 @@
 import { useAdminStats } from "../../hooks/useApi";
-import { Users, FileText, Clock, BookOpen, GraduationCap } from "lucide-react";
+import { Users, FileText, Clock } from "lucide-react";
+import { useI18n } from "../../context/LanguageContext";
 import StatusBadge from "../../components/StatusBadge";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function AdminDashboard() {
   const { data: stats, isLoading } = useAdminStats();
+  const { isFrench, formatDate, formatNumber } = useI18n();
 
   if (isLoading) return <LoadingSpinner />;
   if (!stats) return null;
 
+  const copy = isFrench
+    ? {
+        totalCustomers: "Clients totaux",
+        totalProcedures: "Dossiers totaux",
+        pendingProcedures: "A traiter / en cours",
+        recentProcedures: "Derniers dossiers",
+        client: "Client",
+        service: "Service",
+        destination: "Destination",
+        status: "Statut",
+        date: "Date",
+      }
+    : {
+        totalCustomers: "Total Customers",
+        totalProcedures: "Total Procedures",
+        pendingProcedures: "Pending / In Progress",
+        recentProcedures: "Recent Procedures",
+        client: "Client",
+        service: "Service",
+        destination: "Destination",
+        status: "Status",
+        date: "Date",
+      };
+
   const cards = [
-    { icon: Users, label: "Total Customers", value: stats.totalUsers, color: "bg-blue-100 text-blue-600" },
-    { icon: FileText, label: "Total Procedures", value: stats.totalProcedures, color: "bg-purple-100 text-purple-600" },
-    { icon: Clock, label: "Pending/In Progress", value: stats.pendingProcedures, color: "bg-amber-100 text-amber-600" },
-    { icon: BookOpen, label: "Active Courses", value: stats.activeCourses, color: "bg-emerald-100 text-emerald-600" },
-    { icon: GraduationCap, label: "Total Enrollments", value: stats.totalEnrollments, color: "bg-pink-100 text-pink-600" },
+    { icon: Users, label: copy.totalCustomers, value: formatNumber(stats.totalUsers), color: "bg-blue-100 text-blue-600" },
+    { icon: FileText, label: copy.totalProcedures, value: formatNumber(stats.totalProcedures), color: "bg-purple-100 text-purple-600" },
+    { icon: Clock, label: copy.pendingProcedures, value: formatNumber(stats.pendingProcedures), color: "bg-amber-100 text-amber-600" },
   ];
 
   return (
     <div>
       {/* Stats */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
         {cards.map(({ icon: Icon, label, value, color }) => (
           <div key={label} className="card flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
@@ -35,16 +59,16 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Procedures */}
-      <h2 className="font-heading text-lg font-semibold text-gray-900 mb-4">Recent Procedures</h2>
+      <h2 className="font-heading text-lg font-semibold text-gray-900 mb-4">{copy.recentProcedures}</h2>
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-gray-500 border-b">
-              <th className="pb-3 font-medium">Client</th>
-              <th className="pb-3 font-medium">Service</th>
-              <th className="pb-3 font-medium">Destination</th>
-              <th className="pb-3 font-medium">Status</th>
-              <th className="pb-3 font-medium">Date</th>
+              <th className="pb-3 font-medium">{copy.client}</th>
+              <th className="pb-3 font-medium">{copy.service}</th>
+              <th className="pb-3 font-medium">{copy.destination}</th>
+              <th className="pb-3 font-medium">{copy.status}</th>
+              <th className="pb-3 font-medium">{copy.date}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -54,7 +78,7 @@ export default function AdminDashboard() {
                 <td className="py-3">{p.procedureType.name}</td>
                 <td className="py-3">{p.destination.name}</td>
                 <td className="py-3"><StatusBadge status={p.status} /></td>
-                <td className="py-3 text-gray-400">{new Date(p.createdAt).toLocaleDateString()}</td>
+                <td className="py-3 text-gray-400">{formatDate(p.createdAt)}</td>
               </tr>
             ))}
           </tbody>

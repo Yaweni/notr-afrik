@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useDestination } from "../hooks/useApi";
 import { useAuth } from "../context/AuthContext";
+import { useI18n } from "../context/LanguageContext";
 import { useEnrollInCourse } from "../hooks/useApi";
 import { Calendar, Clock, Users, ArrowLeft, BookOpen } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -10,28 +11,55 @@ export default function DestinationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: dest, isLoading } = useDestination(id!);
   const { isAuthenticated } = useAuth();
+  const { isFrench, formatCurrency, formatDate } = useI18n();
   const enrollMutation = useEnrollInCourse();
+
+  const copy = isFrench
+    ? {
+        loginToEnroll: "Connectez-vous pour vous inscrire",
+        enrolled: "Inscription reussie !",
+        enrollFailed: "L'inscription a echoue",
+        notFound: "Destination introuvable",
+        back: "Retour aux destinations",
+        availableCourses: "Cours de langue disponibles",
+        max: "Max",
+        enrolling: "Inscription...",
+        enrollNow: "S'inscrire",
+        noCourses: "Aucun cours n'est encore disponible pour cette destination.",
+      }
+    : {
+        loginToEnroll: "Please log in to enroll",
+        enrolled: "Enrolled successfully!",
+        enrollFailed: "Enrollment failed",
+        notFound: "Destination not found",
+        back: "Back to destinations",
+        availableCourses: "Available Language Courses",
+        max: "Max",
+        enrolling: "Enrolling...",
+        enrollNow: "Enroll Now",
+        noCourses: "No courses available for this destination yet.",
+      };
 
   const handleEnroll = async (courseId: string) => {
     if (!isAuthenticated) {
-      toast.error("Please log in to enroll");
+      toast.error(copy.loginToEnroll);
       return;
     }
     try {
       await enrollMutation.mutateAsync(courseId);
-      toast.success("Enrolled successfully!");
+      toast.success(copy.enrolled);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || "Enrollment failed");
+      toast.error(err.response?.data?.error || copy.enrollFailed);
     }
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (!dest) return <div className="text-center py-20 text-gray-500">Destination not found</div>;
+  if (!dest) return <div className="text-center py-20 text-gray-500">{copy.notFound}</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <Link to="/destinations" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-primary-600 mb-6">
-        <ArrowLeft className="w-4 h-4" /> Back to destinations
+        <ArrowLeft className="w-4 h-4" /> {copy.back}
       </Link>
 
       <div className="flex items-center gap-4 mb-8">
@@ -48,7 +76,7 @@ export default function DestinationDetailPage() {
       <div className="mb-6">
         <h2 className="font-heading text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-primary-500" />
-          Available Language Courses
+          {copy.availableCourses}
         </h2>
       </div>
 
@@ -62,19 +90,19 @@ export default function DestinationDetailPage() {
               </div>
               <p className="text-sm text-gray-500 mb-4">{course.description}</p>
               <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
-                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gray-400" />{new Date(course.startDate).toLocaleDateString()}</div>
+                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gray-400" />{formatDate(course.startDate)}</div>
                 <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-gray-400" />{course.schedule}</div>
-                <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-400" />Max {course.maxStudents}</div>
-                <div className="font-semibold text-cameroon-green">{course.price.toLocaleString()} {course.currency}</div>
+                <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-400" />{copy.max} {course.maxStudents}</div>
+                <div className="font-semibold text-cameroon-green">{formatCurrency(course.price, course.currency)}</div>
               </div>
               <button onClick={() => handleEnroll(course.id)} disabled={enrollMutation.isPending} className="btn-primary w-full text-sm">
-                {enrollMutation.isPending ? "Enrolling..." : "Enroll Now"}
+                {enrollMutation.isPending ? copy.enrolling : copy.enrollNow}
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-gray-400 text-center py-8">No courses available for this destination yet.</p>
+        <p className="text-gray-400 text-center py-8">{copy.noCourses}</p>
       )}
     </div>
   );

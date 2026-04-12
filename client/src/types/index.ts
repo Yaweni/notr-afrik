@@ -180,6 +180,12 @@ export interface AdminFinanceSnapshot {
   procedures: AdminFinanceProcedureBalance[];
 }
 
+export interface AdminUserRow extends Pick<User, "id" | "email" | "firstName" | "lastName" | "phone" | "role" | "createdAt"> {
+  _count?: {
+    procedures: number;
+  };
+}
+
 // ─── Notifications ────────────────────────────────────────────────
 export interface Notification {
   id: string;
@@ -217,7 +223,5 @@ export interface AdminStats {
   totalUsers: number;
   totalProcedures: number;
   pendingProcedures: number;
-  activeCourses: number;
-  totalEnrollments: number;
   recentProcedures: Procedure[];
 }

@@ -1,16 +1,35 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, FileText, BookOpen, Wallet } from "lucide-react";
-
-const links = [
-  { to: "/admin", icon: LayoutDashboard, label: "Dashboard", exact: true },
-  { to: "/admin/procedures", icon: FileText, label: "Procedures" },
-  { to: "/admin/finance", icon: Wallet, label: "Finance" },
-  { to: "/admin/users", icon: Users, label: "Users" },
-  { to: "/admin/enrollments", icon: BookOpen, label: "Enrollments" },
-];
+import { LayoutDashboard, Users, FileText, Wallet } from "lucide-react";
+import { useI18n } from "../../context/LanguageContext";
 
 export default function AdminLayout() {
   const { pathname } = useLocation();
+  const { isFrench } = useI18n();
+
+  const copy = isFrench
+    ? {
+        title: "Espace administration",
+        subtitle: "Pilotez les dossiers, les finances et les clients.",
+        dashboard: "Tableau de bord",
+        procedures: "Dossiers",
+        finance: "Finances",
+        users: "Clients",
+      }
+    : {
+        title: "Admin Panel",
+        subtitle: "Manage procedures, finance, and customers.",
+        dashboard: "Dashboard",
+        procedures: "Procedures",
+        finance: "Finance",
+        users: "Users",
+      };
+
+  const links = [
+    { to: "/admin", icon: LayoutDashboard, label: copy.dashboard, exact: true },
+    { to: "/admin/procedures", icon: FileText, label: copy.procedures },
+    { to: "/admin/finance", icon: Wallet, label: copy.finance },
+    { to: "/admin/users", icon: Users, label: copy.users },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -20,8 +39,8 @@ export default function AdminLayout() {
             <LayoutDashboard className="w-5 h-5 text-amber-700" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-sm text-gray-500">Manage procedures, finance, users, and content</p>
+            <h1 className="font-heading text-2xl font-bold text-gray-900">{copy.title}</h1>
+            <p className="text-sm text-gray-500">{copy.subtitle}</p>
           </div>
         </div>
 

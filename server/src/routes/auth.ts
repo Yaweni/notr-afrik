@@ -140,7 +140,7 @@ router.post("/refresh", async (req, res) => {
 });
 
 // ── Logout ────────────────────────────────────────────────────────
-router.post("/logout", authenticate, async (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (refreshToken) {

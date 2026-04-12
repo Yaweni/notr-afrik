@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
+import { useI18n } from "./context/LanguageContext";
 
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -20,9 +21,17 @@ import AdminFinancePage from "./pages/admin/AdminFinancePage";
 import AdminProcedures from "./pages/admin/AdminProcedures";
 import AdminProcedureDetailPage from "./pages/admin/AdminProcedureDetailPage";
 import AdminUsers from "./pages/admin/AdminUsers";
-import AdminEnrollments from "./pages/admin/AdminEnrollments";
 
 export default function App() {
+  const { isFrench } = useI18n();
+  const copy = isFrench
+    ? {
+        notFound: "Page introuvable",
+      }
+    : {
+        notFound: "Page not found",
+      };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -52,7 +61,6 @@ export default function App() {
               <Route path="procedures/:id" element={<AdminProcedureDetailPage />} />
               <Route path="finance" element={<AdminFinancePage />} />
               <Route path="users" element={<AdminUsers />} />
-              <Route path="enrollments" element={<AdminEnrollments />} />
             </Route>
           </Route>
 
@@ -61,7 +69,7 @@ export default function App() {
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
                 <h1 className="text-6xl font-heading font-bold text-gray-300">404</h1>
-                <p className="text-gray-500 mt-2">Page not found</p>
+                <p className="text-gray-500 mt-2">{copy.notFound}</p>
               </div>
             </div>
           } />

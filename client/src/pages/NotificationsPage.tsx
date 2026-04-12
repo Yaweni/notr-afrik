@@ -1,4 +1,5 @@
 import { useNotifications, useMarkNotificationRead, useMarkAllRead } from "../hooks/useApi";
+import { useI18n } from "../context/LanguageContext";
 import { Bell, CheckCheck, Info, CheckCircle, AlertTriangle, FileText, BookOpen } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -22,6 +23,21 @@ export default function NotificationsPage() {
   const { data: notifications, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllRead();
+  const { isFrench, formatDate } = useI18n();
+
+  const copy = isFrench
+    ? {
+        title: "Notifications",
+        unread: "non lues",
+        markAllRead: "Tout marquer comme lu",
+        empty: "Aucune notification pour le moment.",
+      }
+    : {
+        title: "Notifications",
+        unread: "unread",
+        markAllRead: "Mark all read",
+        empty: "No notifications yet.",
+      };
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -32,13 +48,13 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-heading text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Bell className="w-6 h-6" /> Notifications
+            <Bell className="w-6 h-6" /> {copy.title}
           </h1>
-          <p className="text-gray-500 text-sm">{unread} unread</p>
+          <p className="text-gray-500 text-sm">{unread} {copy.unread}</p>
         </div>
         {unread > 0 && (
           <button onClick={() => markAllRead.mutate()} className="btn-secondary !py-2 !px-4 text-sm flex items-center gap-2">
-            <CheckCheck className="w-4 h-4" /> Mark all read
+            <CheckCheck className="w-4 h-4" /> {copy.markAllRead}
           </button>
         )}
       </div>
@@ -60,7 +76,7 @@ export default function NotificationsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-semibold text-gray-900 text-sm">{n.title}</h3>
-                    <span className="text-xs text-gray-400 flex-shrink-0">{new Date(n.createdAt).toLocaleDateString()}</span>
+                    <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(n.createdAt)}</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">{n.message}</p>
                 </div>
@@ -69,7 +85,7 @@ export default function NotificationsPage() {
           })}
         </div>
       ) : (
-        <div className="card text-center py-12 text-gray-400">No notifications yet.</div>
+        <div className="card text-center py-12 text-gray-400">{copy.empty}</div>
       )}
     </div>
   );

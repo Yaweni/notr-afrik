@@ -1,7 +1,41 @@
 import { Globe, Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useI18n } from "../context/LanguageContext";
 
 export default function Footer() {
+  const { isFrench } = useI18n();
+  const copy = isFrench
+    ? {
+        tagline: "Votre partenaire immigration de confiance au Cameroun. Nous rendons le depart a l'etranger plus clair depuis 2015.",
+        quickLinks: "Liens utiles",
+        destinations: "Destinations",
+        courses: "Cours de langue",
+        services: "Parcours",
+        getStarted: "Commencer",
+        servicesTitle: "Services",
+        serviceItems: ["Visa etudiant", "Permis de travail", "Regroupement familial", "Formation linguistique", "Preparation des dossiers"],
+        contact: "Contact",
+        location: "Douala, Cameroun",
+        rights: "Tous droits reserves.",
+        privacy: "Politique de confidentialite",
+        terms: "Conditions d'utilisation",
+      }
+    : {
+        tagline: "Your trusted immigration partner in Cameroon. Guiding you to your dream destination since 2015.",
+        quickLinks: "Quick Links",
+        destinations: "Destinations",
+        courses: "Language Courses",
+        services: "Journeys",
+        getStarted: "Get Started",
+        servicesTitle: "Services",
+        serviceItems: ["Student Visas", "Work Permits", "Family Reunification", "Language Training", "Document Preparation"],
+        contact: "Contact Us",
+        location: "Douala, Cameroon",
+        rights: "All rights reserved.",
+        privacy: "Privacy Policy",
+        terms: "Terms of Service",
+      };
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -17,40 +51,38 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Your trusted immigration partner in Cameroon. Guiding you to your dream destination since 2015.
+              {copy.tagline}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-heading font-semibold text-white mb-4">Quick Links</h4>
+            <h4 className="font-heading font-semibold text-white mb-4">{copy.quickLinks}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/destinations" className="hover:text-cameroon-yellow transition-colors">Destinations</Link></li>
-              <li><Link to="/courses" className="hover:text-cameroon-yellow transition-colors">Language Courses</Link></li>
-              <li><Link to="/procedures" className="hover:text-cameroon-yellow transition-colors">Our Services</Link></li>
-              <li><Link to="/register" className="hover:text-cameroon-yellow transition-colors">Get Started</Link></li>
+              <li><Link to="/destinations" className="hover:text-cameroon-yellow transition-colors">{copy.destinations}</Link></li>
+              <li><Link to="/courses" className="hover:text-cameroon-yellow transition-colors">{copy.courses}</Link></li>
+              <li><Link to="/procedures" className="hover:text-cameroon-yellow transition-colors">{copy.services}</Link></li>
+              <li><Link to="/register" className="hover:text-cameroon-yellow transition-colors">{copy.getStarted}</Link></li>
             </ul>
           </div>
 
           {/* Services */}
           <div>
-            <h4 className="font-heading font-semibold text-white mb-4">Services</h4>
+            <h4 className="font-heading font-semibold text-white mb-4">{copy.servicesTitle}</h4>
             <ul className="space-y-2 text-sm">
-              <li>Student Visas</li>
-              <li>Work Permits</li>
-              <li>Family Reunification</li>
-              <li>Language Training</li>
-              <li>Document Preparation</li>
+              {copy.serviceItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-heading font-semibold text-white mb-4">Contact Us</h4>
+            <h4 className="font-heading font-semibold text-white mb-4">{copy.contact}</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-cameroon-yellow flex-shrink-0" />
-                Douala, Cameroon
+                {copy.location}
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-cameroon-yellow flex-shrink-0" />
@@ -65,10 +97,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ImmigrationCM. All rights reserved.</p>
+          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ImmigrationCM. {copy.rights}</p>
           <div className="flex gap-6 text-sm text-gray-500">
-            <a href="#" className="hover:text-gray-300">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-300">Terms of Service</a>
+            <a href="#" className="hover:text-gray-300">{copy.privacy}</a>
+            <a href="#" className="hover:text-gray-300">{copy.terms}</a>
           </div>
         </div>
       </div>
