@@ -18,12 +18,37 @@ import {
   ThumbsUp,
   BadgeCheck,
 } from "lucide-react";
-import { useSiteContent, useDestinations } from "../hooks/useApi";
+import { useSiteContent, useDestinations, useTestimonials, useSuccessStories } from "../hooks/useApi";
 import { useI18n } from "../context/LanguageContext";
+
+// Sample data used when the backend isn't available (static-only deploy).
+const SAMPLE_DESTINATIONS = [
+  { id: "s1", code: "DE", name: "Allemagne", description: "Ausbildung, university studies and work — the most popular route for our candidates.", descriptionFr: "Ausbildung, etudes universitaires et travail — la voie la plus demandee par nos candidats." },
+  { id: "s2", code: "CA", name: "Canada", description: "Express Entry, study permits and family sponsorship pathways.", descriptionFr: "Entree Express, permis d'etudes et parrainage familial." },
+  { id: "s3", code: "US", name: "Etats-Unis", description: "Student visas (F-1), work visas and diversity lottery support.", descriptionFr: "Visas etudiant (F-1), visas de travail et loterie de la diversite." },
+  { id: "s4", code: "FR", name: "France", description: "Campus France procedures, student and family reunification visas.", descriptionFr: "Procedures Campus France, visas etudiant et regroupement familial." },
+  { id: "s5", code: "IT", name: "Italie", description: "Seasonal work, study and family visas across the Mediterranean.", descriptionFr: "Travail saisonnier, etudes et visas familiaux en Mediterranee." },
+  { id: "s6", code: "GB", name: "Royaume-Uni", description: "Student visas, skilled worker and language requirements guidance.", descriptionFr: "Visas etudiant, worker qualifie et exigences linguistiques." },
+];
+
+const SAMPLE_TESTIMONIALS = [
+  { id: "t1", name: "Aline N.", country: "Allemagne", countryFr: "Allemagne", message: "I got my Ausbildung visa with NOTR-AFRIK's help — they guided every document.", messageFr: "J'ai obtenu mon visa Ausbildung grace a NOTR-AFRIK — chaque document guide." },
+  { id: "t2", name: "Brice K.", country: "Canada", countryFr: "Canada", message: "The team made the Express Entry process clear and stress-free.", messageFr: "L'equipe a rendu le processus d'Entree Express clair et sans stress." },
+  { id: "t3", name: "Cynthia M.", country: "France", countryFr: "France", message: "Thanks to the German courses, I passed my exam and got my visa.", messageFr: "Grace aux cours d'allemand, j'ai reussi mon examen et obtenu mon visa." },
+];
+
+const SAMPLE_STORIES = [
+  { id: "st1", destination: "Germany", destinationFr: "Allemagne", title: "From Douala to an Ausbildung in Berlin", titleFr: "De Douala a une Ausbildung a Berlin", summary: "6 months from first appointment to visa.", summaryFr: "6 mois entre le premier rendez-vous et le visa.", content: "Aline started with language courses, then voucher preparation. We tracked every step until her visa was approved.", contentFr: "Aline a commence par les cours de langue, puis la preparation du dossier. Nous avons suivi chaque etape jusqu'a l'approbation du visa." },
+];
 
 export default function HomePage() {
   const { data: content } = useSiteContent();
-  const { data: destinations } = useDestinations();
+  const { data: destRaw } = useDestinations();
+  const { data: testRaw } = useTestimonials();
+  const { data: storiesRaw } = useSuccessStories();
+  const destinations = Array.isArray(destRaw) && destRaw.length ? destRaw : SAMPLE_DESTINATIONS;
+  const testimonials = Array.isArray(testRaw) && testRaw.length ? testRaw : SAMPLE_TESTIMONIALS;
+  const stories = Array.isArray(storiesRaw) && storiesRaw.length ? storiesRaw : SAMPLE_STORIES;
   const { isFrench, getLocalizedContent, getLocalizedValue } = useI18n();
 
   const copy = isFrench
@@ -62,6 +87,9 @@ export default function HomePage() {
         destinationsTitle: "Destinations populaires",
         destinationsSubtitle: "Explorez les pays les plus demandes par nos etudiants et voyageurs.",
         learnMore: "En savoir plus",
+        testimonialsTitle: "Ce que disent nos clients",
+        relocatedTo: "Installe en {country}",
+        storiesTitle: "Parcours de reussite",
         ctaTitle: "Pret a realiser votre projet international ?",
         ctaText: "Contactez-nous des aujourd'hui et beneficiez d'un accompagnement personnalise pour votre projet d'etudes, de travail ou de voyage.",
         ctaButton: "Nous contacter",
@@ -102,6 +130,9 @@ export default function HomePage() {
         destinationsTitle: "Popular Destinations",
         destinationsSubtitle: "Explore the countries most requested by our students and travelers.",
         learnMore: "Learn more",
+        testimonialsTitle: "What our clients say",
+        relocatedTo: "Relocated to {country}",
+        storiesTitle: "Success stories",
         ctaTitle: "Ready to make your international project a reality?",
         ctaText: "Contact us today and get personalized support for your study, work, or travel project.",
         ctaButton: "Contact Us",
@@ -226,8 +257,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Destinations ────────────────────────────────────────── */}
-      {destinations && destinations.length > 0 && (
-        <section className="py-20 bg-background">
+      <section className="py-20 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -238,7 +268,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {destinations.slice(0, 6).map((dest) => (
+              {destinations.slice(0, 6).map((dest: any) => (
                 <Link to={`/destinations/${dest.id}`} key={dest.id} className="card group hover:-translate-y-1 transition-all duration-300">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-notrafrik-navy to-notrafrik-light flex items-center justify-center text-xl font-bold text-white">
@@ -257,7 +287,63 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-      )}
+
+      {/* ── Testimonials ────────────────────────────────────────── */}
+      <section className="py-20 bg-muted/30 dark:bg-muted/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {copy.testimonialsTitle}
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((t: any) => (
+              <div key={t.id} className="card">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-notrafrik-gold text-notrafrik-gold" />
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">&ldquo;{getLocalizedValue(t.message, t.messageFr)}&rdquo;</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-card-foreground">{t.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {copy.relocatedTo.replace("{country}", getLocalizedValue(t.country, t.countryFr))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Success Stories ─────────────────────────────────────── */}
+      <section className="py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {copy.storiesTitle}
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {stories.map((s: any) => (
+              <div key={s.id} className="card">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="badge bg-primary/15 text-primary">{getLocalizedValue(s.destination, s.destinationFr)}</span>
+                </div>
+                <h3 className="font-heading font-semibold text-xl text-card-foreground mb-2">{getLocalizedValue(s.title, s.titleFr)}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{getLocalizedValue(s.summary, s.summaryFr)}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{getLocalizedValue(s.content, s.contentFr)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── CTA ─────────────────────────────────────────────────── */}
       <section className="py-20 bg-gradient-to-r from-notrafrik-navy to-notrafrik-light text-white relative overflow-hidden">

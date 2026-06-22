@@ -16,7 +16,16 @@ api.interceptors.request.use((config) => {
 
 // Response interceptor — refresh token on 401
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Reject SPA-fallback HTML responses (happens on static-only deploys with no backend).
+    // Without this, /api requests return index.html (200) and axios resolves with a
+    // string, which crashes React components expecting arrays/objects.
+    const d = response?.data;
+    if (typeof d === "string" && d.trimStart().startsWith("<")) {
+      return Promise.reject(new Error("Backend unavailable"));
+    }
+    return response;
+  },
   async (error) => {
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
