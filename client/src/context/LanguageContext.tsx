@@ -12,6 +12,11 @@ interface LanguageContextType {
   setLanguage: (language: Language) => void;
   isFrench: boolean;
   locale: string;
+  getLocalizedValue: (
+    englishValue?: string | null,
+    frenchValue?: string | null,
+    fallbacks?: LocalizedFallbacks,
+  ) => string;
   formatCurrency: (value: number, currency: string) => string;
   formatDate: (value: string | Date) => string;
   formatDateTime: (value: string | Date) => string;
@@ -30,7 +35,7 @@ function getInitialLanguage(): Language {
     return "en";
   }
 
-  const savedLanguage = window.localStorage.getItem("immigrationcm.language");
+  const savedLanguage = window.localStorage.getItem("notrafrik.language");
   if (savedLanguage === "en" || savedLanguage === "fr") {
     return savedLanguage;
   }
@@ -48,7 +53,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const locale = isFrench ? "fr-FR" : "en-US";
 
   useEffect(() => {
-    window.localStorage.setItem("immigrationcm.language", language);
+    window.localStorage.setItem("notrafrik.language", language);
     document.documentElement.lang = language;
   }, [language]);
 
@@ -57,6 +62,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const formatDate = (value: string | Date) => new Intl.DateTimeFormat(locale).format(toDate(value));
   const formatDateTime = (value: string | Date) =>
     new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(toDate(value));
+
+  const getLocalizedValue = (
+    englishValue?: string | null,
+    frenchValue?: string | null,
+    fallbacks?: LocalizedFallbacks,
+  ) => {
+    const primaryValue = isFrench ? frenchValue : englishValue;
+    const secondaryValue = isFrench ? englishValue : frenchValue;
+    const primaryFallback = isFrench ? fallbacks?.fr : fallbacks?.en;
+    const secondaryFallback = isFrench ? fallbacks?.en : fallbacks?.fr;
+
+    return primaryValue || primaryFallback || secondaryValue || secondaryFallback || "";
+  };
 
   const getLocalizedContent = (
     content: Record<string, string> | undefined,
@@ -78,6 +96,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         setLanguage,
         isFrench,
         locale,
+        getLocalizedValue,
         formatCurrency,
         formatDate,
         formatDateTime,

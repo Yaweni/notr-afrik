@@ -10,7 +10,7 @@ import { useProcedure } from "@/hooks/useApi";
 export default function ProcedureDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: proc, isLoading } = useProcedure(id!);
-  const { isFrench, formatCurrency, formatDate, formatDateTime } = useI18n();
+  const { isFrench, formatCurrency, formatDate, formatDateTime, getLocalizedValue } = useI18n();
 
   const copy = isFrench
     ? {
@@ -92,7 +92,7 @@ export default function ProcedureDetailPage() {
             <MapPinned className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl font-bold text-foreground">{proc.procedureType.name}</h1>
+            <h1 className="font-heading text-2xl font-bold text-foreground">{getLocalizedValue(proc.procedureType.name, proc.procedureType.nameFr)}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{proc.destination.name}</p>
           </div>
         </div>
@@ -135,8 +135,8 @@ export default function ProcedureDetailPage() {
                     {index < proc.updates.length - 1 && <div className="mt-2 h-full w-px bg-border" />}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-foreground">{update.title}</div>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{update.message}</p>
+                    <div className="font-semibold text-foreground">{getLocalizedValue(update.title, update.titleFr)}</div>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{getLocalizedValue(update.message, update.messageFr)}</p>
                     <div className="mt-2 text-xs text-muted-foreground">{formatDateTime(update.createdAt)}</div>
                   </div>
                 </div>

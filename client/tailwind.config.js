@@ -72,6 +72,12 @@ export default {
           red:    "#CE1126",
           yellow: "#FCD116",
         },
+        notrafrik: {
+          navy:   "#0D1B3E",
+          gold:   "#F0B429",
+          red:    "#C41E3A",
+          light:  "#1E3A5F",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

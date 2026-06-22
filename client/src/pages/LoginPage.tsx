@@ -21,7 +21,7 @@ export default function LoginPage() {
   const copy = isFrench
     ? {
         title: "Bon retour",
-        subtitle: "Connectez-vous a votre compte ImmigrationCM",
+        subtitle: "Connectez-vous a votre compte NOTR-AFRIK",
         email: "Email",
         password: "Mot de passe",
         signingIn: "Connexion...",
@@ -43,7 +43,7 @@ export default function LoginPage() {
       }
     : {
         title: "Welcome Back",
-        subtitle: "Log in to your ImmigrationCM account",
+        subtitle: "Log in to your NOTR-AFRIK account",
         email: "Email",
         password: "Password",
         signingIn: "Signing in...",
@@ -124,7 +124,7 @@ export default function LoginPage() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/60">{copy.admin}</div>
-                    <div className="mt-2 text-sm font-medium text-white">admin@immigration-cm.com</div>
+                    <div className="mt-2 text-sm font-medium text-white">admin@notr-afrik.com</div>
                     <div className="text-sm text-sidebar-foreground/70">admin123</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">

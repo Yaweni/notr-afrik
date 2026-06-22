@@ -51,10 +51,10 @@ export function useDestination(id: string) {
 
 // ─── Procedure Types ──────────────────────────────────────────────
 
-export function useProcedureTypes() {
+export function useProcedureTypes(params?: { destinationId?: string }) {
   return useQuery<ProcedureType[]>({
-    queryKey: ["procedureTypes"],
-    queryFn: () => api.get("/procedures/types").then((r) => r.data),
+    queryKey: ["procedureTypes", params],
+    queryFn: () => api.get("/procedures/types", { params }).then((r) => r.data),
   });
 }
 
@@ -104,10 +104,11 @@ export function useCourse(id: string) {
   });
 }
 
-export function useMyEnrollments() {
+export function useMyEnrollments(enabled = true) {
   return useQuery<Enrollment[]>({
     queryKey: ["enrollments", "mine"],
     queryFn: () => api.get("/courses/enrollments/mine").then((r) => r.data),
+    enabled,
   });
 }
 

@@ -6,12 +6,20 @@ import { Calendar, Clock, Users } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import toast from "react-hot-toast";
 
+function formatLanguage(language: string, isFrench: boolean) {
+  const labels = isFrench
+    ? { English: "Anglais", French: "Francais", German: "Allemand" }
+    : { English: "English", French: "French", German: "German" };
+
+  return labels[language as keyof typeof labels] ?? language;
+}
+
 export default function CoursesPage() {
   const [filters, setFilters] = useState<{ destination?: string; language?: string; level?: string }>({});
   const { data: courses, isLoading } = useCourses(filters);
   const { data: destinations } = useDestinations();
   const { isAuthenticated } = useAuth();
-  const { isFrench, formatCurrency, formatDate } = useI18n();
+  const { isFrench, formatCurrency, formatDate, getLocalizedValue } = useI18n();
   const enrollMutation = useEnrollInCourse();
 
   const copy = isFrench
@@ -58,8 +66,8 @@ export default function CoursesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-10">
-        <h1 className="font-heading text-3xl font-bold text-gray-900 mb-2">{copy.title}</h1>
-        <p className="text-gray-500">{copy.subtitle}</p>
+        <h1 className="mb-2 font-heading text-3xl font-bold text-foreground">{copy.title}</h1>
+        <p className="text-muted-foreground">{copy.subtitle}</p>
       </div>
 
       {/* Filters */}
@@ -85,16 +93,16 @@ export default function CoursesPage() {
           {courses.map((course) => (
             <div key={course.id} className="card">
               <div className="flex items-center justify-between mb-3">
-                <span className="badge bg-emerald-100 text-emerald-700">{course.language}</span>
-                <span className="badge bg-primary-100 text-primary-700">{course.level}</span>
+                <span className="badge bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">{formatLanguage(course.language, isFrench)}</span>
+                <span className="badge bg-primary-100 text-primary-700 dark:bg-primary/20 dark:text-primary-foreground">{course.level}</span>
               </div>
-              <h3 className="font-heading font-semibold text-lg text-gray-900 mb-1">{course.title}</h3>
-              {course.destination && <p className="text-xs text-gray-400 mb-3">{copy.forDestination.replace("{destination}", course.destination.name)}</p>}
-              <p className="text-sm text-gray-500 mb-4">{course.description}</p>
-              <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-4">
-                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gray-400" />{formatDate(course.startDate)}</div>
-                <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-gray-400" />{course.schedule}</div>
-                <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-400" />{course._count?.enrollments ?? 0}/{course.maxStudents}</div>
+              <h3 className="mb-1 font-heading text-lg font-semibold text-foreground">{getLocalizedValue(course.title, course.titleFr)}</h3>
+              {course.destination && <p className="mb-3 text-xs text-muted-foreground">{copy.forDestination.replace("{destination}", course.destination.name)}</p>}
+              <p className="mb-4 text-sm text-muted-foreground">{getLocalizedValue(course.description, course.descriptionFr)}</p>
+              <div className="mb-4 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-muted-foreground" />{formatDate(course.startDate)}</div>
+                <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-muted-foreground" />{course.schedule}</div>
+                <div className="flex items-center gap-2"><Users className="w-4 h-4 text-muted-foreground" />{course._count?.enrollments ?? 0}/{course.maxStudents}</div>
                 <div className="font-semibold text-cameroon-green">{formatCurrency(course.price, course.currency)}</div>
               </div>
               <button onClick={() => handleEnroll(course.id)} disabled={enrollMutation.isPending} className="btn-primary w-full text-sm">
@@ -104,7 +112,7 @@ export default function CoursesPage() {
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-400 py-12">{copy.noResults}</p>
+        <p className="py-12 text-center text-muted-foreground">{copy.noResults}</p>
       )}
     </div>
   );

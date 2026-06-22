@@ -32,6 +32,63 @@ export interface ProfileDocument {
   updatedAt: string;
 }
 
+export interface PathwayRequirement {
+  id: string;
+  procedureTypeId: string;
+  title: string;
+  titleFr?: string | null;
+  description: string;
+  descriptionFr?: string | null;
+  section: string;
+  audience: "public" | "customer" | "both";
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PathwayResource {
+  id: string;
+  procedureTypeId: string;
+  label: string;
+  labelFr?: string | null;
+  url: string;
+  provider?: string | null;
+  providerFr?: string | null;
+  resourceType: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PathwayCourseRecommendation {
+  id: string;
+  procedureTypeId: string;
+  courseId: string;
+  rationale?: string | null;
+  rationaleFr?: string | null;
+  priority: string;
+  isPrimary: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  course: LanguageCourse;
+}
+
+export interface DestinationFeaturedPathway {
+  id: string;
+  name: string;
+  nameFr?: string | null;
+  slug?: string | null;
+  category: string;
+  description?: string | null;
+  descriptionFr?: string | null;
+  officialProgramName?: string | null;
+  officialProgramNameFr?: string | null;
+  estimatedTimeline?: string | null;
+  estimatedTimelineFr?: string | null;
+  isFeatured: boolean;
+}
+
 // ─── Destination ──────────────────────────────────────────────────
 export interface Destination {
   id: string;
@@ -39,18 +96,45 @@ export interface Destination {
   code: string;
   flagUrl?: string;
   description?: string;
+  descriptionFr?: string | null;
   isActive: boolean;
   createdAt: string;
   languageCourses?: LanguageCourse[];
+  pathways?: ProcedureType[];
+  pathwayCount?: number;
+  featuredPathways?: DestinationFeaturedPathway[];
 }
 
 // ─── Procedure ────────────────────────────────────────────────────
 export interface ProcedureType {
   id: string;
+  destinationId?: string | null;
+  slug?: string | null;
+  category: string;
   name: string;
+  nameFr?: string | null;
   description?: string;
+  descriptionFr?: string | null;
+  publicSummary?: string | null;
+  publicSummaryFr?: string | null;
+  officeSummary?: string | null;
+  officeSummaryFr?: string | null;
+  officialProgramName?: string | null;
+  officialProgramNameFr?: string | null;
+  officialWebsiteUrl?: string | null;
+  officialWebsiteLabel?: string | null;
+  officialWebsiteLabelFr?: string | null;
+  estimatedTimeline?: string | null;
+  estimatedTimelineFr?: string | null;
   price: number;
   currency: string;
+  isFeatured?: boolean;
+  isActive?: boolean;
+  sortOrder?: number;
+  destination?: Destination;
+  requirements?: PathwayRequirement[];
+  resources?: PathwayResource[];
+  courseRecommendations?: PathwayCourseRecommendation[];
 }
 
 export type ProcedureStatus =
@@ -84,7 +168,9 @@ export interface ProcedureUpdate {
   id: string;
   procedureId: string;
   title: string;
+  titleFr?: string | null;
   message: string;
+  messageFr?: string | null;
   createdAt: string;
 }
 
@@ -104,7 +190,9 @@ export interface LanguageCourse {
   language: string;
   level: string;
   title: string;
+  titleFr?: string | null;
   description?: string;
+  descriptionFr?: string | null;
   schedule?: string;
   price: number;
   currency: string;
@@ -206,7 +294,9 @@ export interface Notification {
   id: string;
   userId: string;
   title: string;
+  titleFr?: string | null;
   message: string;
+  messageFr?: string | null;
   type: "info" | "success" | "warning" | "procedure" | "course" | "payment";
   isRead: boolean;
   createdAt: string;
@@ -217,7 +307,9 @@ export interface Testimonial {
   id: string;
   name: string;
   country?: string;
+  countryFr?: string | null;
   message: string;
+  messageFr?: string | null;
   avatarUrl?: string;
   isActive: boolean;
 }
@@ -225,10 +317,14 @@ export interface Testimonial {
 export interface SuccessStory {
   id: string;
   title: string;
+  titleFr?: string | null;
   summary: string;
+  summaryFr?: string | null;
   content: string;
+  contentFr?: string | null;
   imageUrl?: string;
   destination?: string;
+  destinationFr?: string | null;
   isPublished: boolean;
   createdAt: string;
 }

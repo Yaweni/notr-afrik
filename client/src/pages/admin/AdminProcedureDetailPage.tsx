@@ -16,7 +16,7 @@ export default function AdminProcedureDetailPage() {
   const updateStatus = useUpdateProcedureStatus();
   const addPayment = useAddProcedurePayment();
   const addDocument = useAddProcedureDocument();
-  const { isFrench, formatCurrency, formatDate, formatDateTime } = useI18n();
+  const { isFrench, formatCurrency, formatDate, formatDateTime, getLocalizedValue } = useI18n();
 
   const [status, setStatus] = useState<ProcedureStatus>("pending");
   const [statusMessage, setStatusMessage] = useState("");
@@ -216,7 +216,7 @@ export default function AdminProcedureDetailPage() {
         </Link>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="font-heading text-2xl font-semibold text-gray-900">{procedure.procedureType.name}</h2>
+            <h2 className="font-heading text-2xl font-semibold text-gray-900">{getLocalizedValue(procedure.procedureType.name, procedure.procedureType.nameFr)}</h2>
             <p className="text-sm text-gray-500 mt-1">{procedure.destination.name} {copy.forClient} {procedure.user?.firstName} {procedure.user?.lastName}</p>
           </div>
           <StatusBadge status={procedure.status} />
@@ -253,8 +253,8 @@ export default function AdminProcedureDetailPage() {
               <div className="space-y-4">
                 {procedure.updates.map((update) => (
                   <div key={update.id} className="border-l-2 border-amber-100 pl-4">
-                    <div className="font-medium text-gray-900">{update.title}</div>
-                    <p className="text-sm text-gray-500 mt-1">{update.message}</p>
+                    <div className="font-medium text-gray-900">{getLocalizedValue(update.title, update.titleFr)}</div>
+                    <p className="text-sm text-gray-500 mt-1">{getLocalizedValue(update.message, update.messageFr)}</p>
                     <div className="text-xs text-gray-400 mt-2">{formatDateTime(update.createdAt)}</div>
                   </div>
                 ))}

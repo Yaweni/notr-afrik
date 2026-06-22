@@ -10,7 +10,7 @@ import { useMyEnrollments, useMyProcedures, useNotifications } from "@/hooks/use
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { isFrench, formatCurrency, formatDate, formatNumber } = useI18n();
+  const { isFrench, formatCurrency, formatDate, formatNumber, getLocalizedValue } = useI18n();
   const { data: procedures, isLoading: procLoading } = useMyProcedures();
   const { data: enrollments, isLoading: enrLoading } = useMyEnrollments();
   const { data: notifications } = useNotifications();
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 className="font-heading text-lg font-semibold text-foreground">{procedure.procedureType.name}</h3>
+                      <h3 className="font-heading text-lg font-semibold text-foreground">{getLocalizedValue(procedure.procedureType.name, procedure.procedureType.nameFr)}</h3>
                       <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                         <span>{procedure.destination.name}</span>
                         <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{formatDate(procedure.createdAt)}</span>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
                   {procedure.updates.length > 0 && (
                     <div className="mt-4 rounded-xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                      {copy.latest.replace("{message}", procedure.updates[0].message)}
+                      {copy.latest.replace("{message}", getLocalizedValue(procedure.updates[0].message, procedure.updates[0].messageFr))}
                     </div>
                   )}
                 </Link>
@@ -233,7 +233,7 @@ export default function DashboardPage() {
                   <div key={enrollment.id} className="rounded-2xl border border-border bg-background/70 p-5 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <h3 className="font-heading text-lg font-semibold text-foreground">{enrollment.course.title}</h3>
+                        <h3 className="font-heading text-lg font-semibold text-foreground">{getLocalizedValue(enrollment.course.title, enrollment.course.titleFr)}</h3>
                         <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                           <span>{enrollment.course.language} {enrollment.course.level}</span>
                           {enrollment.course.destination?.name && <span>{enrollment.course.destination.name}</span>}

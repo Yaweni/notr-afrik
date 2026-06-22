@@ -17,9 +17,9 @@
     --popover:     0 0% 100%;
     --popover-foreground: 222 60% 8%;
 
-    /* Primary = amber-gold (Cameroon palette CTA) */
-    --primary:     43 96% 50%;
-    --primary-foreground: 222 60% 8%;
+    /* Primary = navy blue (NOTR-AFRIK brand) */
+    --primary:     215 65% 20%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary:   210 14% 94%;
     --secondary-foreground: 222 47% 12%;
@@ -35,19 +35,19 @@
 
     --border:      214 32% 91%;
     --input:       214 32% 91%;
-    --ring:        43 96% 50%;
+    --ring:        215 65% 20%;
 
     --radius:      0.75rem;
 
     /* Sidebar for light mode */
     --sidebar:              210 33% 99%;
     --sidebar-foreground:   222 47% 12%;
-    --sidebar-primary:      43 96% 50%;
-    --sidebar-primary-foreground: 222 60% 8%;
+    --sidebar-primary:      215 65% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent:       210 22% 95%;
     --sidebar-accent-foreground: 222 47% 12%;
     --sidebar-border:       214 28% 88%;
-    --sidebar-ring:         43 96% 50%;
+    --sidebar-ring:         215 65% 20%;
   }
 
   .dark {
@@ -60,8 +60,8 @@
     --popover:     222 60% 8%;
     --popover-foreground: 210 40% 96%;
 
-    --primary:     43 96% 50%;
-    --primary-foreground: 222 84% 5%;
+    --primary:     215 50% 35%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary:   217 33% 15%;
     --secondary-foreground: 210 40% 96%;
@@ -77,16 +77,16 @@
 
     --border:      217 33% 18%;
     --input:       217 33% 18%;
-    --ring:        43 96% 50%;
+    --ring:        215 50% 35%;
 
     --sidebar:              222 84% 4%;
     --sidebar-foreground:   215 20% 80%;
-    --sidebar-primary:      43 96% 50%;
-    --sidebar-primary-foreground: 222 84% 4%;
+    --sidebar-primary:      215 50% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent:       222 70% 9%;
     --sidebar-accent-foreground: 215 20% 80%;
     --sidebar-border:       222 60% 12%;
-    --sidebar-ring:         43 96% 50%;
+    --sidebar-ring:         215 50% 35%;
   }
 
   * {
@@ -97,13 +97,13 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image: radial-gradient(ellipse 80% 60% at 50% -10%,
-      hsl(43 96% 50% / 0.04) 0%, transparent 70%);
+      hsl(215 65% 20% / 0.04) 0%, transparent 70%);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   .dark body {
     background-image: radial-gradient(ellipse 80% 60% at 50% -10%,
-      hsl(43 96% 50% / 0.06) 0%, transparent 70%);
+      hsl(215 50% 35% / 0.08) 0%, transparent 70%);
   }
 }
 

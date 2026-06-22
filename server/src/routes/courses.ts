@@ -98,7 +98,9 @@ router.post("/:id/enroll", authenticate, async (req, res) => {
       data: {
         userId,
         title: "Course Enrollment",
+        titleFr: "Inscription au cours",
         message: `You've been enrolled in "${course.title}" (${course.language} ${course.level}).`,
+        messageFr: `Vous etes inscrit au cours "${course.titleFr || course.title}" (${course.language} ${course.level}).`,
         type: "course",
       },
     });

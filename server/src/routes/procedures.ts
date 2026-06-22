@@ -1,14 +1,133 @@
 import { Router } from "express";
+import type { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma.js";
 import { getRouteParam } from "../lib/routeParams.js";
 import { authenticate, requireRole } from "../middleware/auth.js";
 
 const router = Router();
 
+const statusLabels = {
+  en: {
+    pending: "pending",
+    documents_review: "documents review",
+    in_progress: "in progress",
+    approved: "approved",
+    rejected: "rejected",
+    completed: "completed",
+  },
+  fr: {
+    pending: "en attente",
+    documents_review: "documents en revue",
+    in_progress: "en cours",
+    approved: "approuve",
+    rejected: "refuse",
+    completed: "termine",
+  },
+} as const;
+
+function formatAmount(amount: number, locale: "en-US" | "fr-FR") {
+  return new Intl.NumberFormat(locale).format(amount);
+}
+
+function buildPathwayOpenedNotification(pathwayName: string, pathwayNameFr: string | null | undefined, destinationName: string) {
+  return {
+    title: "Pathway Opened",
+    titleFr: "Parcours ouvert",
+    message: `Your ${pathwayName} file for ${destinationName} has been opened.`,
+    messageFr: `Votre dossier ${pathwayNameFr || pathwayName} pour ${destinationName} a ete ouvert.`,
+  };
+}
+
+function buildStatusUpdateContent(
+  status: keyof typeof statusLabels.en,
+  pathwayName: string,
+  pathwayNameFr: string | null | undefined,
+  customMessage?: string,
+) {
+  return {
+    title: `Status: ${statusLabels.en[status].toUpperCase()}`,
+    titleFr: `Statut : ${statusLabels.fr[status].toUpperCase()}`,
+    message: customMessage || `Your ${pathwayName} status has been updated to: ${statusLabels.en[status]}.`,
+    messageFr: customMessage || `Le statut de votre dossier ${pathwayNameFr || pathwayName} a ete mis a jour : ${statusLabels.fr[status]}.`,
+  };
+}
+
+function buildPaymentContent(
+  amount: number,
+  currency: string,
+  pathwayName: string,
+  pathwayNameFr: string | null | undefined,
+  note?: string,
+) {
+  const amountEn = formatAmount(amount, "en-US");
+  const amountFr = formatAmount(amount, "fr-FR");
+
+  return {
+    updateTitle: "Payment Recorded",
+    updateTitleFr: "Paiement enregistre",
+    updateMessage: `Offline payment of ${amountEn} ${currency} recorded${note ? `: ${note}` : "."}`,
+    updateMessageFr: `Paiement hors ligne de ${amountFr} ${currency} enregistre${note ? ` : ${note}` : "."}`,
+    notificationTitle: "Payment Recorded",
+    notificationTitleFr: "Paiement enregistre",
+    notificationMessage: note
+      ? `An offline payment of ${amountEn} ${currency} has been recorded for your ${pathwayName} application. Note: ${note}`
+      : `An offline payment of ${amountEn} ${currency} has been recorded for your ${pathwayName} application.`,
+    notificationMessageFr: note
+      ? `Un paiement hors ligne de ${amountFr} ${currency} a ete enregistre pour votre dossier ${pathwayNameFr || pathwayName}. Note : ${note}`
+      : `Un paiement hors ligne de ${amountFr} ${currency} a ete enregistre pour votre dossier ${pathwayNameFr || pathwayName}.`,
+  };
+}
+
+function buildDocumentContent(
+  fileType: string,
+  name: string,
+  pathwayName: string,
+  pathwayNameFr: string | null | undefined,
+) {
+  return {
+    updateTitle: "Document Shared",
+    updateTitleFr: "Document partage",
+    updateMessage: `A new ${fileType} has been added to your ${pathwayName} procedure: ${name}`,
+    updateMessageFr: `Un nouveau ${fileType} a ete ajoute a votre dossier ${pathwayNameFr || pathwayName} : ${name}`,
+    notificationTitle: "New Document Shared",
+    notificationTitleFr: "Nouveau document partage",
+    notificationMessage: `A new ${fileType} has been added to your ${pathwayName} procedure: ${name}`,
+    notificationMessageFr: `Un nouveau ${fileType} a ete ajoute a votre dossier ${pathwayNameFr || pathwayName} : ${name}`,
+  };
+}
+
+const pathwayDetailInclude = {
+  destination: true,
+  requirements: { orderBy: { sortOrder: "asc" } },
+  resources: { orderBy: { sortOrder: "asc" } },
+  courseRecommendations: {
+    orderBy: { sortOrder: "asc" },
+    include: {
+      course: {
+        include: {
+          destination: true,
+          _count: { select: { enrollments: true } },
+        },
+      },
+    },
+  },
+} satisfies Prisma.ProcedureTypeInclude;
+
 // ── Public: List procedure types ──────────────────────────────────
-router.get("/types", async (_req, res) => {
+router.get("/types", async (req, res) => {
   try {
-    const types = await prisma.procedureType.findMany({ orderBy: { name: "asc" } });
+    const destinationId = typeof req.query.destinationId === "string" ? req.query.destinationId : undefined;
+
+    const where: Record<string, string | boolean> = { isActive: true };
+    if (destinationId) {
+      where.destinationId = destinationId;
+    }
+
+    const types = await prisma.procedureType.findMany({
+      where,
+      include: pathwayDetailInclude,
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    });
     res.json(types);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -21,7 +140,7 @@ router.get("/mine", authenticate, async (req, res) => {
     const procedures = await prisma.procedure.findMany({
       where: { userId: req.user!.userId },
       include: {
-        procedureType: true,
+        procedureType: { include: pathwayDetailInclude },
         destination: true,
         updates: { orderBy: { createdAt: "desc" } },
         payments: { orderBy: { paidAt: "desc" } },
@@ -54,6 +173,16 @@ router.post("/", authenticate, async (req, res) => {
       return;
     }
 
+    if (!procedureType.isActive) {
+      res.status(400).json({ error: "This pathway is not currently available" });
+      return;
+    }
+
+    if (procedureType.destinationId && procedureType.destinationId !== destinationId) {
+      res.status(400).json({ error: "Selected pathway does not belong to that destination" });
+      return;
+    }
+
     const procedure = await prisma.procedure.create({
       data: {
         userId: req.user!.userId,
@@ -64,7 +193,7 @@ router.post("/", authenticate, async (req, res) => {
         notes,
       },
       include: {
-        procedureType: true,
+        procedureType: { include: pathwayDetailInclude },
         destination: true,
         updates: { orderBy: { createdAt: "desc" } },
         payments: { orderBy: { paidAt: "desc" } },
@@ -75,8 +204,11 @@ router.post("/", authenticate, async (req, res) => {
     await prisma.notification.create({
       data: {
         userId: req.user!.userId,
-        title: "Procedure Created",
-        message: `Your ${procedure.procedureType.name} application for ${procedure.destination.name} has been submitted.`,
+        ...buildPathwayOpenedNotification(
+          procedure.procedureType.name,
+          procedure.procedureType.nameFr,
+          procedure.destination.name,
+        ),
         type: "procedure",
       },
     });
@@ -100,7 +232,7 @@ router.get("/:id", authenticate, async (req, res) => {
     const procedure = await prisma.procedure.findUnique({
       where: { id: procedureId },
       include: {
-        procedureType: true,
+        procedureType: { include: pathwayDetailInclude },
         destination: true,
         updates: { orderBy: { createdAt: "desc" } },
         documents: { orderBy: { uploadedAt: "desc" } },
@@ -139,7 +271,7 @@ router.get("/", authenticate, requireRole("admin", "staff"), async (req, res) =>
       prisma.procedure.findMany({
         where,
         include: {
-          procedureType: true,
+          procedureType: { include: pathwayDetailInclude },
           destination: true,
           user: { select: { id: true, firstName: true, lastName: true, email: true } },
           payments: { orderBy: { paidAt: "desc" } },
@@ -172,6 +304,11 @@ router.patch("/:id/status", authenticate, requireRole("admin", "staff"), async (
       return;
     }
 
+    if (!(status in statusLabels.en)) {
+      res.status(400).json({ error: "Invalid status" });
+      return;
+    }
+
     const procedure = await prisma.procedure.update({
       where: { id: procedureId },
       data: { status },
@@ -180,21 +317,39 @@ router.patch("/:id/status", authenticate, requireRole("admin", "staff"), async (
 
     // Add update entry
     if (message) {
+      const statusCopy = buildStatusUpdateContent(
+        status as keyof typeof statusLabels.en,
+        procedure.procedureType.name,
+        procedure.procedureType.nameFr,
+        message,
+      );
+
       await prisma.procedureUpdate.create({
         data: {
           procedureId: procedure.id,
-          title: `Status: ${status.replace(/_/g, " ").toUpperCase()}`,
-          message,
+          title: statusCopy.title,
+          titleFr: statusCopy.titleFr,
+          message: statusCopy.message,
+          messageFr: statusCopy.messageFr,
         },
       });
     }
 
     // Notify customer
+    const statusNotification = buildStatusUpdateContent(
+      status as keyof typeof statusLabels.en,
+      procedure.procedureType.name,
+      procedure.procedureType.nameFr,
+      message,
+    );
+
     await prisma.notification.create({
       data: {
         userId: procedure.userId,
         title: "Procedure Update",
-        message: message || `Your ${procedure.procedureType.name} status has been updated to: ${status.replace(/_/g, " ")}`,
+        titleFr: "Mise a jour du dossier",
+        message: statusNotification.message,
+        messageFr: statusNotification.messageFr,
         type: "procedure",
       },
     });
@@ -237,9 +392,13 @@ router.post("/:id/payments", authenticate, requireRole("admin", "staff"), async 
       return;
     }
 
-    const paymentMessage = note
-      ? `An offline payment of ${amount.toLocaleString()} ${procedure.currency} has been recorded for your ${procedure.procedureType.name} application. Note: ${note}`
-      : `An offline payment of ${amount.toLocaleString()} ${procedure.currency} has been recorded for your ${procedure.procedureType.name} application.`;
+    const paymentCopy = buildPaymentContent(
+      amount,
+      procedure.currency,
+      procedure.procedureType.name,
+      procedure.procedureType.nameFr,
+      note,
+    );
 
     const payment = await prisma.$transaction(async (tx) => {
       const createdPayment = await tx.payment.create({
@@ -255,16 +414,20 @@ router.post("/:id/payments", authenticate, requireRole("admin", "staff"), async 
       await tx.procedureUpdate.create({
         data: {
           procedureId: procedure.id,
-          title: "Payment Recorded",
-          message: `Offline payment of ${amount.toLocaleString()} ${procedure.currency} recorded${note ? `: ${note}` : "."}`,
+          title: paymentCopy.updateTitle,
+          titleFr: paymentCopy.updateTitleFr,
+          message: paymentCopy.updateMessage,
+          messageFr: paymentCopy.updateMessageFr,
         },
       });
 
       await tx.notification.create({
         data: {
           userId: procedure.userId,
-          title: "Payment Recorded",
-          message: paymentMessage,
+          title: paymentCopy.notificationTitle,
+          titleFr: paymentCopy.notificationTitleFr,
+          message: paymentCopy.notificationMessage,
+          messageFr: paymentCopy.notificationMessageFr,
           type: "success",
         },
       });
@@ -312,6 +475,13 @@ router.post("/:id/documents", authenticate, requireRole("admin", "staff"), async
     }
 
     const document = await prisma.$transaction(async (tx) => {
+      const documentCopy = buildDocumentContent(
+        fileType,
+        name,
+        procedure.procedureType.name,
+        procedure.procedureType.nameFr,
+      );
+
       const createdDocument = await tx.document.create({
         data: {
           procedureId: procedure.id,
@@ -324,16 +494,20 @@ router.post("/:id/documents", authenticate, requireRole("admin", "staff"), async
       await tx.procedureUpdate.create({
         data: {
           procedureId: procedure.id,
-          title: "Document Shared",
-          message: `A new ${fileType} has been added to your ${procedure.procedureType.name} procedure: ${name}`,
+          title: documentCopy.updateTitle,
+          titleFr: documentCopy.updateTitleFr,
+          message: documentCopy.updateMessage,
+          messageFr: documentCopy.updateMessageFr,
         },
       });
 
       await tx.notification.create({
         data: {
           userId: procedure.userId,
-          title: "New Document Shared",
-          message: `A new ${fileType} has been added to your ${procedure.procedureType.name} procedure: ${name}`,
+          title: documentCopy.notificationTitle,
+          titleFr: documentCopy.notificationTitleFr,
+          message: documentCopy.notificationMessage,
+          messageFr: documentCopy.notificationMessageFr,
           type: "procedure",
         },
       });

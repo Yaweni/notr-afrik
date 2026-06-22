@@ -32,10 +32,14 @@ tmp/
 temp/
 
 # Contracts and business documents
+contrat/*
 contracts/
 *.pdf
 *.doc
 *.docx
+
+# Client design references (not needed in repo)
+Images Client/
 
 # OS/editor noise
 .DS_Store

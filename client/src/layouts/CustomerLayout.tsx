@@ -40,7 +40,7 @@ export default function CustomerLayout() {
 
   const copy = isFrench
     ? {
-        appName: "ImmoCM",
+        appName: "NOTR-AFRIK",
         overview: "Vue d'ensemble",
         profile: "Mon profil",
         journeys: "Mes parcours",
@@ -55,7 +55,7 @@ export default function CustomerLayout() {
         menu: "Menu",
       }
     : {
-        appName: "ImmoCM",
+        appName: "NOTR-AFRIK",
         overview: "Overview",
         profile: "My Profile",
         journeys: "My Journeys",

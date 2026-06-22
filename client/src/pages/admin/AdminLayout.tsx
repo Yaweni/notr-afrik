@@ -37,7 +37,7 @@ export default function AdminLayout() {
 
   const copy = isFrench
     ? {
-        appName: "ImmoCM",
+        appName: "NOTR-AFRIK",
         dashboard: "Tableau de bord",
         procedures: "Dossiers",
         finance: "Finances",
@@ -49,7 +49,7 @@ export default function AdminLayout() {
         menu: "Menu",
       }
     : {
-        appName: "ImmoCM",
+        appName: "NOTR-AFRIK",
         dashboard: "Dashboard",
         procedures: "Procedures",
         finance: "Finance",

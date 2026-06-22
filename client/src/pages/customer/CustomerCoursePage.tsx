@@ -6,9 +6,17 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/context/LanguageContext";
 import { useCourse, useMyEnrollments } from "@/hooks/useApi";
 
+function formatLanguage(language: string, isFrench: boolean) {
+  const labels = isFrench
+    ? { English: "Anglais", French: "Francais", German: "Allemand" }
+    : { English: "English", French: "French", German: "German" };
+
+  return labels[language as keyof typeof labels] ?? language;
+}
+
 export default function CustomerCoursePage() {
   const { id } = useParams<{ id: string }>();
-  const { isFrench, formatCurrency, formatDate } = useI18n();
+  const { isFrench, formatCurrency, formatDate, getLocalizedValue } = useI18n();
   const { data: course, isLoading } = useCourse(id ?? "");
   const { data: enrollments } = useMyEnrollments();
 
@@ -92,7 +100,7 @@ export default function CustomerCoursePage() {
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline">{copy.language}: {course.language}</Badge>
+              <Badge variant="outline">{copy.language}: {formatLanguage(course.language, isFrench)}</Badge>
               <Badge variant="info">{copy.level}: {course.level}</Badge>
               {enrollment && (
                 <Badge variant={statusBadge.variant} className={statusBadge.className}>
@@ -100,8 +108,8 @@ export default function CustomerCoursePage() {
                 </Badge>
               )}
             </div>
-            <h1 className="mt-3 font-heading text-2xl font-bold text-foreground">{course.title}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{course.description}</p>
+            <h1 className="mt-3 font-heading text-2xl font-bold text-foreground">{getLocalizedValue(course.title, course.titleFr)}</h1>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{getLocalizedValue(course.description, course.descriptionFr)}</p>
           </div>
         </div>
       </div>

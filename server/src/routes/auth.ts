@@ -134,7 +134,7 @@ router.post("/refresh", async (req, res) => {
     const tokens = generateTokens(payload);
 
     // Rotate refresh token
-    await prisma.refreshToken.delete({ where: { id: stored.id } });
+    await prisma.refreshToken.deleteMany({ where: { id: stored.id } });
     await prisma.refreshToken.create({
       data: {
         token: tokens.refreshToken,

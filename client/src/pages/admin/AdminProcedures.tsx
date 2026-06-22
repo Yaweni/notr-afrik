@@ -21,7 +21,7 @@ export default function AdminProcedures() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newStatus, setNewStatus] = useState<ProcedureStatus | "">("");
   const [message, setMessage] = useState("");
-  const { isFrench, formatCurrency, formatDate, formatNumber } = useI18n();
+  const { isFrench, formatCurrency, formatDate, formatNumber, getLocalizedValue } = useI18n();
 
   const copy = isFrench
     ? {
@@ -266,7 +266,7 @@ export default function AdminProcedures() {
                         <div className="mt-1 text-xs text-muted-foreground">{procedure.user?.email}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-medium text-foreground">{procedure.procedureType.name}</div>
+                        <div className="font-medium text-foreground">{getLocalizedValue(procedure.procedureType.name, procedure.procedureType.nameFr)}</div>
                         <div className="mt-1 text-xs text-muted-foreground">{formatDate(procedure.createdAt)}</div>
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">{procedure.destination.name}</td>
@@ -316,7 +316,7 @@ export default function AdminProcedures() {
             {activeProcedure && (
               <div className="mt-5 rounded-2xl border border-border bg-muted/30 px-4 py-3">
                 <div className="font-medium text-foreground">{activeProcedure.user?.firstName} {activeProcedure.user?.lastName}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{activeProcedure.procedureType.name} · {activeProcedure.destination.name}</div>
+                <div className="mt-1 text-sm text-muted-foreground">{getLocalizedValue(activeProcedure.procedureType.name, activeProcedure.procedureType.nameFr)} · {activeProcedure.destination.name}</div>
               </div>
             )}
 

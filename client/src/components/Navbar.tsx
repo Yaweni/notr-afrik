@@ -3,13 +3,14 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useI18n } from "../context/LanguageContext";
 import { useUnreadCount } from "../hooks/useApi";
+import ThemeToggle from "./ThemeToggle";
+import NotrAfrikLogo from "./NotrAfrikLogo";
 import {
   Menu,
   X,
   Bell,
   LogOut,
   LayoutDashboard,
-  Globe,
   Shield,
   Languages,
 } from "lucide-react";
@@ -29,25 +30,27 @@ export default function Navbar() {
         home: "Accueil",
         destinations: "Destinations",
         courses: "Cours",
-        services: "Parcours",
+        services: "Services",
         dashboard: "Tableau de bord",
         admin: "Admin",
         login: "Connexion",
         signup: "Inscription",
         logout: "Deconnexion",
         language: "Langue",
+        theme: "Theme",
       }
     : {
         home: "Home",
         destinations: "Destinations",
         courses: "Courses",
-        services: "Journeys",
+        services: "Services",
         dashboard: "Dashboard",
         admin: "Admin",
         login: "Log In",
         signup: "Sign Up",
         logout: "Logout",
         language: "Language",
+        theme: "Theme",
       };
 
   const handleLogout = () => {
@@ -57,22 +60,22 @@ export default function Navbar() {
   };
 
   const languageToggle = (
-    <div className="hidden sm:flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
-      <div className="flex items-center gap-1 px-2 text-xs font-semibold text-gray-500">
+    <div className="hidden sm:flex items-center gap-1 rounded-full border border-border bg-card p-1 shadow-sm">
+      <div className="flex items-center gap-1 px-2 text-xs font-semibold text-muted-foreground">
         <Languages className="w-3.5 h-3.5" />
         {copy.language}
       </div>
       <button
         type="button"
         onClick={() => setLanguage("en")}
-        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "en" ? "bg-primary-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
       >
         EN
       </button>
       <button
         type="button"
         onClick={() => setLanguage("fr")}
-        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "fr" ? "bg-primary-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "fr" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
       >
         FR
       </button>
@@ -80,33 +83,28 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to={isAuthenticated ? portalHome : "/"} className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cameroon-green to-cameroon-yellow flex items-center justify-center">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-heading font-bold text-lg text-gray-900 hidden sm:block">
-              Immigration<span className="text-cameroon-green">CM</span>
-            </span>
+            <NotrAfrikLogo className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-1">
             {!isAuthenticated && (
               <>
-            <Link to="/" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
+            <Link to="/" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.home}
             </Link>
-            <Link to="/destinations" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
+            <Link to="/destinations" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.destinations}
             </Link>
-            <Link to="/courses" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
+            <Link to="/courses" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.courses}
             </Link>
-            <Link to="/procedures" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg hover:bg-gray-50 transition-colors">
+            <Link to="/procedures" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.services}
             </Link>
               </>
@@ -116,14 +114,15 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-2">
             {languageToggle}
+            <ThemeToggle className="hidden sm:inline-flex" />
 
             {isLoading ? (
-              <div className="hidden sm:block h-10 w-28 rounded-xl bg-gray-100 animate-pulse" />
+              <div className="hidden h-10 w-28 animate-pulse rounded-xl bg-muted sm:block" />
             ) : isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard/notifications"
-                  className="relative p-2 text-gray-500 hover:text-primary-600 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
@@ -135,7 +134,7 @@ export default function Navbar() {
 
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span className="hidden sm:inline">{copy.dashboard}</span>
@@ -144,7 +143,7 @@ export default function Navbar() {
                 {(user?.role === "admin" || user?.role === "staff") && (
                   <Link
                     to="/admin"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
+                    className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-200 dark:hover:bg-amber-900/30"
                   >
                     <Shield className="w-4 h-4" />
                     <span className="hidden sm:inline">{copy.admin}</span>
@@ -153,7 +152,7 @@ export default function Navbar() {
 
                 <button
                   onClick={handleLogout}
-                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40"
                   title={copy.logout}
                 >
                   <LogOut className="w-5 h-5" />
@@ -173,7 +172,7 @@ export default function Navbar() {
             {/* Mobile menu toggle */}
             {!isAuthenticated && (
               <button
-                className="md:hidden p-2 text-gray-500 hover:bg-gray-50 rounded-lg"
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted md:hidden"
                 onClick={() => setMobileOpen(!mobileOpen)}
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -185,37 +184,43 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white">
+        <div className="border-t border-border bg-background md:hidden">
           <div className="px-4 py-3 space-y-1">
-            <Link to="/" className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+            <Link to="/" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.home}
             </Link>
-            <Link to="/destinations" className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+            <Link to="/destinations" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.destinations}
             </Link>
-            <Link to="/courses" className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+            <Link to="/courses" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.courses}
             </Link>
-            <Link to="/procedures" className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+            <Link to="/procedures" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.services}
             </Link>
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 mt-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">{copy.language}</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setLanguage("en")}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "en" ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-600"}`}
-                >
-                  EN
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLanguage("fr")}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "fr" ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-600"}`}
-                >
-                  FR
-                </button>
+            <div className="mt-3 space-y-3 border-t border-border px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.language}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setLanguage("en")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLanguage("fr")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${language === "fr" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+                  >
+                    FR
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.theme}</span>
+                <ThemeToggle />
               </div>
             </div>
           </div>

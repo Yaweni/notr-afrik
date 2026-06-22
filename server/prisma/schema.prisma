@@ -50,26 +50,106 @@ model Destination {
   code        String   @unique // e.g. "CA", "DE", "FR"
   flagUrl     String?
   description String?
+  descriptionFr String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   procedures     Procedure[]
   languageCourses LanguageCourse[]
+  procedureTypes ProcedureType[]
 }
 
 // ─── Immigration Procedures ──────────────────────────────────────
 
 model ProcedureType {
   id          String   @id @default(cuid())
+  destinationId String?
+  slug        String?  @unique
+  category    String   @default("general") // student | pr | work | family | visit | general
   name        String   // e.g. "Student Visa", "Work Permit", "Tourist Visa", "Family Reunification"
+  nameFr      String?
   description String?
+  descriptionFr String?
+  publicSummary String?
+  publicSummaryFr String?
+  officeSummary String?
+  officeSummaryFr String?
+  officialProgramName String?
+  officialProgramNameFr String?
+  officialWebsiteUrl String?
+  officialWebsiteLabel String?
+  officialWebsiteLabelFr String?
+  estimatedTimeline String?
+  estimatedTimelineFr String?
   price       Float
   currency    String   @default("XAF")
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  destination Destination? @relation(fields: [destinationId], references: [id])
   procedures Procedure[]
+  requirements ProcedureTypeRequirement[]
+  resources ProcedureTypeResource[]
+  courseRecommendations ProcedureTypeCourseRecommendation[]
+}
+
+model ProcedureTypeRequirement {
+  id              String   @id @default(cuid())
+  procedureTypeId String
+  title           String
+  titleFr         String?
+  description     String
+  descriptionFr   String?
+  section         String   @default("general") // admission | identity | finance | language | compliance | settlement | general
+  audience        String   @default("both") // public | customer | both
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  procedureType ProcedureType @relation(fields: [procedureTypeId], references: [id], onDelete: Cascade)
+
+  @@index([procedureTypeId, sortOrder])
+}
+
+model ProcedureTypeResource {
+  id              String   @id @default(cuid())
+  procedureTypeId String
+  label           String
+  labelFr         String?
+  url             String
+  provider        String?
+  providerFr      String?
+  resourceType    String   @default("official") // official | support | office
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  procedureType ProcedureType @relation(fields: [procedureTypeId], references: [id], onDelete: Cascade)
+
+  @@index([procedureTypeId, sortOrder])
+}
+
+model ProcedureTypeCourseRecommendation {
+  id              String   @id @default(cuid())
+  procedureTypeId String
+  courseId        String
+  rationale       String?
+  rationaleFr     String?
+  priority        String   @default("recommended") // primary | recommended | strategic | optional
+  isPrimary       Boolean  @default(false)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  procedureType ProcedureType @relation(fields: [procedureTypeId], references: [id], onDelete: Cascade)
+  course        LanguageCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([procedureTypeId, courseId])
+  @@index([courseId, sortOrder])
 }
 
 model Procedure {
@@ -96,7 +176,9 @@ model ProcedureUpdate {
   id          String   @id @default(cuid())
   procedureId String
   title       String
+  titleFr     String?
   message     String
+  messageFr   String?
   createdAt   DateTime @default(now())
 
   procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
@@ -152,7 +234,9 @@ model LanguageCourse {
   language      String   // e.g. "English", "German", "French"
   level         String   // A1, A2, B1, B2, C1, C2
   title         String
+  titleFr       String?
   description   String?
+  descriptionFr String?
   schedule      String?  // e.g. "Mon-Wed-Fri 9:00-11:00"
   price         Float
   currency      String   @default("XAF")
@@ -165,6 +249,7 @@ model LanguageCourse {
 
   destination Destination  @relation(fields: [destinationId], references: [id])
   enrollments Enrollment[]
+  pathwayRecommendations ProcedureTypeCourseRecommendation[]
 }
 
 model Enrollment {
@@ -187,7 +272,9 @@ model Notification {
   id        String   @id @default(cuid())
   userId    String
   title     String
+  titleFr   String?
   message   String
+  messageFr String?
   type      String   @default("info") // info | success | warning | procedure | course
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -208,7 +295,9 @@ model Testimonial {
   id        String   @id @default(cuid())
   name      String
   country   String?
+  countryFr String?
   message   String
+  messageFr String?
   avatarUrl String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -217,10 +306,14 @@ model Testimonial {
 model SuccessStory {
   id          String   @id @default(cuid())
   title       String
+  titleFr     String?
   summary     String
+  summaryFr   String?
   content     String
+  contentFr   String?
   imageUrl    String?
   destination String?
+  destinationFr String?
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

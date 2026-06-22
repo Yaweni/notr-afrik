@@ -16,7 +16,7 @@ function getInitialTheme(): Theme {
     return "light";
   }
 
-  const savedTheme = window.localStorage.getItem("immigrationcm.theme");
+  const savedTheme = window.localStorage.getItem("notrafrik.theme");
   if (savedTheme === "light" || savedTheme === "dark") {
     return savedTheme;
   }
@@ -29,7 +29,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    window.localStorage.setItem("immigrationcm.theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem("notrafrik.theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {

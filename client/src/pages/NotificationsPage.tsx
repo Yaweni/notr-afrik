@@ -26,7 +26,7 @@ export default function NotificationsPage() {
   const { data: notifications, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllRead();
-  const { isFrench, formatDate } = useI18n();
+  const { isFrench, formatDate, getLocalizedValue } = useI18n();
 
   const copy = isFrench
     ? {
@@ -97,10 +97,10 @@ export default function NotificationsPage() {
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-foreground">{notification.title}</h3>
+                        <h3 className="font-semibold text-foreground">{getLocalizedValue(notification.title, notification.titleFr)}</h3>
                         {!notification.isRead && <span className="h-2 w-2 rounded-full bg-primary" />}
                       </div>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{notification.message}</p>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{getLocalizedValue(notification.message, notification.messageFr)}</p>
                     </div>
                     <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" />

@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function AdminDashboard() {
   const { data: stats, isLoading } = useAdminStats();
-  const { isFrench, formatDate, formatNumber } = useI18n();
+  const { isFrench, formatDate, formatNumber, getLocalizedValue } = useI18n();
 
   if (isLoading) return <LoadingSpinner />;
   if (!stats) return null;
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
                   <td className="px-6 py-3.5 font-medium text-foreground">
                     {p.user?.firstName} {p.user?.lastName}
                   </td>
-                  <td className="px-6 py-3.5 text-muted-foreground">{p.procedureType.name}</td>
+                  <td className="px-6 py-3.5 text-muted-foreground">{getLocalizedValue(p.procedureType.name, p.procedureType.nameFr)}</td>
                   <td className="px-6 py-3.5 text-muted-foreground hidden md:table-cell">{p.destination.name}</td>
                   <td className="px-6 py-3.5"><StatusBadge status={p.status} /></td>
                   <td className="px-6 py-3.5 text-muted-foreground hidden sm:table-cell">{formatDate(p.createdAt)}</td>

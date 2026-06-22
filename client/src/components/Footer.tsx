@@ -1,55 +1,59 @@
-import { Globe, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../context/LanguageContext";
+import NotrAfrikLogo from "./NotrAfrikLogo";
 
 export default function Footer() {
   const { isFrench } = useI18n();
   const copy = isFrench
     ? {
-        tagline: "Votre partenaire immigration de confiance au Cameroun. Nous rendons le depart a l'etranger plus clair depuis 2015.",
+        tagline: "Centre linguistique & accompagnement international. De l'Afrique a l'international, votre succes commence ici.",
         quickLinks: "Liens utiles",
         destinations: "Destinations",
         courses: "Cours de langue",
-        services: "Parcours",
+        services: "Services",
         getStarted: "Commencer",
         servicesTitle: "Services",
-        serviceItems: ["Visa etudiant", "Permis de travail", "Regroupement familial", "Formation linguistique", "Preparation des dossiers"],
+        serviceItems: ["Cours de langue", "Accompagnement Visa", "Auto-ecole", "Contrats internationaux", "Programme d'affiliation", "Suivi personnalise"],
         contact: "Contact",
         location: "Douala, Cameroun",
+        locations: ["Bonaberi", "Deido", "Makepe"],
+        whatsapp1: "691 706 281",
+        whatsapp2: "675 538 218",
+        email: "info@notr-afrik.com",
+        hours: "Lundi - Vendredi, 8h - 20h",
         rights: "Tous droits reserves.",
         privacy: "Politique de confidentialite",
         terms: "Conditions d'utilisation",
       }
     : {
-        tagline: "Your trusted immigration partner in Cameroon. Guiding you to your dream destination since 2015.",
+        tagline: "Language center & international support. From Africa to the world, your success starts here.",
         quickLinks: "Quick Links",
         destinations: "Destinations",
-        courses: "Language Courses",
-        services: "Journeys",
+        courses: "Courses",
+        services: "Services",
         getStarted: "Get Started",
         servicesTitle: "Services",
-        serviceItems: ["Student Visas", "Work Permits", "Family Reunification", "Language Training", "Document Preparation"],
-        contact: "Contact Us",
+        serviceItems: ["Language Courses", "Visa Support", "Driving School", "International Contracts", "Affiliate Program", "Personalized Tracking"],
+        contact: "Contact",
         location: "Douala, Cameroon",
+        locations: ["Bonaberi", "Deido", "Makepe"],
+        whatsapp1: "691 706 281",
+        whatsapp2: "675 538 218",
+        email: "info@notr-afrik.com",
+        hours: "Monday - Friday, 8h - 20h",
         rights: "All rights reserved.",
         privacy: "Privacy Policy",
         terms: "Terms of Service",
       };
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-notrafrik-navy text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cameroon-green to-cameroon-yellow flex items-center justify-center">
-                <Globe className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-heading font-bold text-lg text-white">
-                Immigration<span className="text-cameroon-yellow">CM</span>
-              </span>
-            </div>
+            <NotrAfrikLogo className="h-10 w-auto mb-4" />
             <p className="text-sm text-gray-400 leading-relaxed">
               {copy.tagline}
             </p>
@@ -59,10 +63,10 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold text-white mb-4">{copy.quickLinks}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/destinations" className="hover:text-cameroon-yellow transition-colors">{copy.destinations}</Link></li>
-              <li><Link to="/courses" className="hover:text-cameroon-yellow transition-colors">{copy.courses}</Link></li>
-              <li><Link to="/procedures" className="hover:text-cameroon-yellow transition-colors">{copy.services}</Link></li>
-              <li><Link to="/register" className="hover:text-cameroon-yellow transition-colors">{copy.getStarted}</Link></li>
+              <li><Link to="/destinations" className="hover:text-notrafrik-gold transition-colors">{copy.destinations}</Link></li>
+              <li><Link to="/courses" className="hover:text-notrafrik-gold transition-colors">{copy.courses}</Link></li>
+              <li><Link to="/procedures" className="hover:text-notrafrik-gold transition-colors">{copy.services}</Link></li>
+              <li><Link to="/register" className="hover:text-notrafrik-gold transition-colors">{copy.getStarted}</Link></li>
             </ul>
           </div>
 
@@ -80,24 +84,34 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold text-white mb-4">{copy.contact}</h4>
             <ul className="space-y-3 text-sm">
+              {copy.locations.map((loc) => (
+                <li key={loc} className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-notrafrik-gold flex-shrink-0" />
+                  {loc}
+                </li>
+              ))}
               <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-cameroon-yellow flex-shrink-0" />
-                {copy.location}
+                <Clock className="w-4 h-4 text-notrafrik-gold flex-shrink-0" />
+                {copy.hours}
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-cameroon-yellow flex-shrink-0" />
-                +237 6XX XXX XXX
+                <MessageCircle className="w-4 h-4 text-notrafrik-gold flex-shrink-0" />
+                +237 {copy.whatsapp1}
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-cameroon-yellow flex-shrink-0" />
-                info@immigration-cm.com
+                <Phone className="w-4 h-4 text-notrafrik-gold flex-shrink-0" />
+                +237 {copy.whatsapp2}
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-notrafrik-gold flex-shrink-0" />
+                {copy.email}
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ImmigrationCM. {copy.rights}</p>
+          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} NOTR-AFRIK. {copy.rights}</p>
           <div className="flex gap-6 text-sm text-gray-500">
             <a href="#" className="hover:text-gray-300">{copy.privacy}</a>
             <a href="#" className="hover:text-gray-300">{copy.terms}</a>
