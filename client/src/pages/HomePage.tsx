@@ -174,13 +174,13 @@ export default function HomePage() {
       </section>
 
       {/* ── Services ────────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
               {copy.servicesTitle}
             </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               {copy.servicesSubtitle}
             </p>
           </div>
@@ -191,8 +191,8 @@ export default function HomePage() {
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
                   <Icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="font-heading font-semibold text-xl text-gray-900 mb-3">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+                <h3 className="font-heading font-semibold text-xl text-card-foreground mb-3">{title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -200,10 +200,10 @@ export default function HomePage() {
       </section>
 
       {/* ── Pourquoi nous choisir ───────────────────────────────── */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted/30 dark:bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
               {copy.whyUsTitle}
             </h2>
             <div className="w-20 h-1 bg-notrafrik-gold mx-auto rounded-full" />
@@ -211,13 +211,13 @@ export default function HomePage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {copy.whyUsItems.map(({ icon: Icon, title, desc, color }) => (
-              <div key={title} className="relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group">
+              <div key={title} className="relative bg-card text-card-foreground rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-border group">
                 <div className={`absolute -top-4 left-8 w-10 h-10 ${color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="mt-4">
-                  <h3 className="font-heading font-semibold text-lg text-gray-900 mb-2">{title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+                  <h3 className="font-heading font-semibold text-lg text-card-foreground mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -227,13 +227,13 @@ export default function HomePage() {
 
       {/* ── Destinations ────────────────────────────────────────── */}
       {destinations && destinations.length > 0 && (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
                 {copy.destinationsTitle}
               </h2>
-              <p className="text-gray-500 max-w-2xl mx-auto">
+              <p className="text-muted-foreground max-w-2xl mx-auto">
                 {copy.destinationsSubtitle}
               </p>
             </div>
@@ -245,11 +245,11 @@ export default function HomePage() {
                       {dest.code}
                     </div>
                     <div>
-                      <h3 className="font-heading font-semibold text-lg text-gray-900">{dest.name}</h3>
+                      <h3 className="font-heading font-semibold text-lg text-card-foreground">{dest.name}</h3>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 leading-relaxed">{getLocalizedValue(dest.description, dest.descriptionFr)}</p>
-                  <div className="mt-4 text-notrafrik-navy text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{getLocalizedValue(dest.description, dest.descriptionFr)}</p>
+                  <div className="mt-4 text-primary dark:text-notrafrik-gold text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
                     {copy.learnMore} <ArrowRight className="w-4 h-4" />
                   </div>
                 </Link>

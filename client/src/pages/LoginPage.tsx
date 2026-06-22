@@ -124,7 +124,7 @@ export default function LoginPage() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/60">{copy.admin}</div>
-                    <div className="mt-2 text-sm font-medium text-white">admin@notr-afrik.com</div>
+                    <div className="mt-2 text-sm font-medium text-white">admin@immigration-cm.com</div>
                     <div className="text-sm text-sidebar-foreground/70">admin123</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
