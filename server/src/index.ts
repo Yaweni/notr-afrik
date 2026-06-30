@@ -45,7 +45,7 @@ if (isProduction) {
   app.use(express.static(clientDist));
 
   // SPA fallback – all non-API routes serve index.html
-  app.get("*", (req, res) => {
+  app.get("/*splat", (_req, res) => {
     res.sendFile(path.join(clientDist, "index.html"));
   });
 }
