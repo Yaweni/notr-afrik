@@ -38,12 +38,13 @@ async function main() {
     },
   });
 
-  await prisma.notification.deleteMany({ where: { userId: customer.id } });
-  await prisma.enrollment.deleteMany({ where: { userId: customer.id } });
+  await prisma.notification.deleteMany({});
+  await prisma.enrollment.deleteMany({});
   await prisma.payment.deleteMany({});
   await prisma.document.deleteMany({});
   await prisma.procedureUpdate.deleteMany({});
   await prisma.procedure.deleteMany({});
+  await prisma.refreshToken.deleteMany({});
   await prisma.procedureTypeCourseRecommendation.deleteMany({});
   await prisma.procedureTypeResource.deleteMany({});
   await prisma.procedureTypeRequirement.deleteMany({});
