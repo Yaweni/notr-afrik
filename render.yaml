@@ -2,6 +2,7 @@ services:
   - type: web
     name: notr-afrik
     runtime: node
+    plan: free
     buildCommand: cd server && npm install && npx prisma generate && npm run build && cd ../client && npm install && npm run build
     startCommand: cd server && npx prisma db push && npx prisma db seed && node dist/index.js
     envVars:
@@ -16,10 +17,4 @@ services:
       - key: CLIENT_URL
         value: https://notr-afrik.onrender.com
       - key: DATABASE_URL
-        fromDatabase:
-          name: notr-afrik-db
-          property: connectionString
-
-databases:
-  - name: notr-afrik-db
-    plan: free
+        sync: false
