@@ -12,9 +12,12 @@ interface Slide {
   subtitleFr: string;
   cta: string;
   ctaFr: string;
-  gradient: string;
+  // Unsplash photo URL (1920x900, optimized, auto-format)
+  image: string;
+  imageCredit: string;
 }
 
+// ─── Unsplash photos (free to use under Unsplash License) ──────────
 const SLIDES: Slide[] = [
   {
     id: "visas",
@@ -25,7 +28,8 @@ const SLIDES: Slide[] = [
     subtitleFr: "Visas touristiques, affaires, étudiants & e-visas vers 20+ destinations",
     cta: "Explore visa services",
     ctaFr: "Explorer les services visa",
-    gradient: "from-notrafrik-navy via-notrafrik-light to-blue-900",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&h=900&fit=crop&q=80&auto=format",
+    imageCredit: "Daniel Klein",
   },
   {
     id: "tourism",
@@ -36,7 +40,8 @@ const SLIDES: Slide[] = [
     subtitleFr: "Circuits personnalisés, voyages VIP — Dubaï, Égypte, Seychelles, Singapour & plus",
     cta: "Discover destinations",
     ctaFr: "Découvrir les destinations",
-    gradient: "from-emerald-800 via-emerald-700 to-teal-900",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&h=900&fit=crop&q=80&auto=format",
+    imageCredit: "Denys Nevozhai",
   },
   {
     id: "ticketing",
@@ -47,7 +52,8 @@ const SLIDES: Slide[] = [
     subtitleFr: "Billets d'avion, hôtels à prix réduits, location de véhicules — toutes destinations",
     cta: "Book now",
     ctaFr: "Réserver maintenant",
-    gradient: "from-amber-700 via-orange-600 to-red-800",
+    image: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&h=900&fit=crop&q=80&auto=format",
+    imageCredit: "Ashim D Silva",
   },
   {
     id: "logistics",
@@ -58,7 +64,8 @@ const SLIDES: Slide[] = [
     subtitleFr: "Achats, fret aérien & maritime, dédouanement — Chine, Dubaï, Europe, USA vers Cameroun",
     cta: "View logistics",
     ctaFr: "Voir la logistique",
-    gradient: "from-purple-900 via-purple-700 to-indigo-900",
+    image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1920&h=900&fit=crop&q=80&auto=format",
+    imageCredit: "Chuttersnap",
   },
   {
     id: "events",
@@ -69,7 +76,8 @@ const SLIDES: Slide[] = [
     subtitleFr: "Mariages, anniversaires, événements corporate, lancements — coordination complète",
     cta: "Plan your event",
     ctaFr: "Planifier votre événement",
-    gradient: "from-pink-800 via-rose-700 to-red-800",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&h=900&fit=crop&q=80&auto=format",
+    imageCredit: "Aaron Burden",
   },
 ];
 
@@ -99,88 +107,103 @@ export default function HeroCarousel() {
     return () => clearInterval(timer);
   }, [next]);
 
-  // Reset transition lock after animation completes
   useEffect(() => {
     if (isTransitioning) {
-      const timer = setTimeout(() => setIsTransitioning(false), 600);
+      const timer = setTimeout(() => setIsTransitioning(false), 700);
       return () => clearTimeout(timer);
     }
   }, [isTransitioning]);
-
-  const slide = SLIDES[current];
-  const Icon = slide.icon;
 
   const getTitle = (s: Slide) => (isFrench ? s.titleFr : s.title);
   const getSubtitle = (s: Slide) => (isFrench ? s.subtitleFr : s.subtitle);
   const getCta = (s: Slide) => (isFrench ? s.ctaFr : s.cta);
 
   return (
-    <section className={`relative overflow-hidden bg-gradient-to-br ${slide.gradient} text-white transition-all duration-700`}>
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMjUiPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjEiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-40" />
+    <section className="relative overflow-hidden text-white h-[560px] md:h-[640px]">
+      {/* Background images — all rendered, opacity toggled for crossfade */}
+      {SLIDES.map((slide, i) => (
+        <div
+          key={slide.id}
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out"
+          style={{
+            backgroundImage: `url(${slide.image})`,
+            opacity: i === current ? 1 : 0,
+          }}
+        />
+      ))}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28 relative">
-        <div className="max-w-2xl animate-fade-in" key={current}>
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-notrafrik-navy/85 via-notrafrik-navy/65 to-notrafrik-navy/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-notrafrik-navy/60 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative flex flex-col justify-center">
+        <div key={current} className="max-w-2xl animate-fade-in">
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/20">
-            <Icon className="w-4 h-4 text-notrafrik-gold" />
-            <span className="text-notrafrik-gold">{getTitle(slide)}</span>
+            <SLIDES[current].icon className="w-4 h-4 text-notrafrik-gold" />
+            <span className="text-notrafrik-gold">{getTitle(SLIDES[current])}</span>
           </div>
-          <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-            {getTitle(slide)}
+          <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-6 drop-shadow-lg">
+            {getTitle(SLIDES[current])}
           </h1>
-          <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-8 max-w-xl">
-            {getSubtitle(slide)}
+          <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-8 max-w-xl">
+            {getSubtitle(SLIDES[current])}
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
-              to={`/services#${slide.id}`}
+              to={`/services#${SLIDES[current].id}`}
               className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl"
             >
-              {getCta(slide)}
+              {getCta(SLIDES[current])}
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              to="/courses"
+              to="/services"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/20"
             >
-              Cours de langue
+              {isFrench ? "Voir tous les services" : "View all services"}
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* Navigation arrows */}
-        <button
-          type="button"
-          onClick={prev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-all"
-          aria-label="Previous slide"
-        >
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={next}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-all"
-          aria-label="Next slide"
-        >
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+      {/* Navigation arrows */}
+      <button
+        type="button"
+        onClick={prev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-all border border-white/20 z-10"
+        aria-label="Previous slide"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onClick={next}
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-all border border-white/20 z-10"
+        aria-label="Next slide"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
 
-        {/* Dots */}
-        <div className="flex justify-center gap-2 mt-8">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => goTo(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === current ? "bg-notrafrik-gold w-6" : "bg-white/30 hover:bg-white/50"}`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
+      {/* Dots */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goTo(i)}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === current ? "bg-notrafrik-gold w-6" : "bg-white/40 hover:bg-white/60"}`}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Photo credit (bottom-right, subtle) */}
+      <div className="absolute bottom-2 right-3 text-[10px] text-white/40 z-10">
+        Photo: {SLIDES[current].imageCredit} / Unsplash
       </div>
     </section>
   );

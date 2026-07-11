@@ -24,6 +24,8 @@ interface ServiceCategory {
   subtitle: string;
   subtitleFr: string;
   color: string;
+  // Unsplash header image (1600x600, optimized)
+  image: string;
   services: { fr: string; en: string }[];
 }
 
@@ -36,6 +38,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Tourist, business, student & e-visa processing across 20+ destinations",
     subtitleFr: "Traitement de visas touristiques, affaires, étudiants & e-visas vers 20+ destinations",
     color: "from-notrafrik-navy to-notrafrik-light",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Traitement de visa touristique", en: "Tourist visa processing" },
       { fr: "Traitement de visa d'affaires", en: "Business visa processing" },
@@ -60,6 +63,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Flight tickets, hotels worldwide, and vehicle rentals",
     subtitleFr: "Billets d'avion, hôtels dans le monde entier et location de véhicules",
     color: "from-notrafrik-gold to-amber-400",
+    image: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Réservation et achat de billets d'avion toutes destinations", en: "Flight booking and ticketing — all destinations" },
       { fr: "Réservations d'hôtels moins chers partout dans le monde", en: "Discounted hotel bookings worldwide" },
@@ -75,6 +79,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Custom tours, group travel, VIP trips across Africa, Asia and the Middle East",
     subtitleFr: "Circuits personnalisés, voyages de groupe et VIP en Afrique, Asie et Moyen-Orient",
     color: "from-emerald-600 to-emerald-400",
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Organisation complète de séjours touristiques — Dubaï", en: "Complete tour packages — Dubai" },
       { fr: "Organisation complète de séjours touristiques — Égypte", en: "Complete tour packages — Egypt" },
@@ -99,6 +104,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Purchasing, shipping, customs clearance and supplier payments across 4 continents",
     subtitleFr: "Achats, expédition, dédouanement et paiement fournisseurs sur 4 continents",
     color: "from-purple-600 to-purple-400",
+    image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Achats et expédition de marchandises — Chine → Cameroun", en: "Purchasing & shipping — China → Cameroon" },
       { fr: "Achats et expédition de marchandises — Dubaï → Cameroun", en: "Purchasing & shipping — Dubai → Cameroon" },
@@ -116,6 +122,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Surveillance cameras, alarms, access control — supply, install & maintain",
     subtitleFr: "Caméras de surveillance, alarmes, contrôle d'accès — fourniture, installation et maintenance",
     color: "from-notrafrik-red to-red-400",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Fourniture de matériel de sécurité", en: "Security equipment supply" },
       { fr: "Installation de caméras de surveillance", en: "Surveillance camera installation" },
@@ -131,6 +138,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Weddings, birthdays, corporate events, product launches — full coordination",
     subtitleFr: "Mariages, anniversaires, événements corporate, lancements — coordination complète",
     color: "from-cyan-600 to-cyan-400",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Organisation de mariages", en: "Wedding planning" },
       { fr: "Organisation d'anniversaires", en: "Birthday party planning" },
@@ -148,6 +156,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     subtitle: "Administrative support, travel consulting, VIP and bespoke services",
     subtitleFr: "Assistance administrative, conseil voyage, services VIP et sur mesure",
     color: "from-gray-700 to-gray-500",
+    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&h=500&fit=crop&q=80&auto=format",
     services: [
       { fr: "Assistance administrative internationale", en: "International administrative support" },
       { fr: "Conseils voyage & immigration", en: "Travel & immigration consulting" },
@@ -249,7 +258,16 @@ export default function ServicesPage() {
 
                 {isExpanded && (
                   <div className="px-6 pb-6 pt-0 border-t border-border mx-6 animate-fade-in">
-                    <ul className="mt-4 space-y-2">
+                    <div className="relative h-48 -mx-6 mt-0 mb-4 overflow-hidden">
+                      <img
+                        src={cat.image}
+                        alt={getTitle(cat)}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    </div>
+                    <ul className="mt-2 space-y-2">
                       {cat.services.map((s, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm text-card-foreground">
                           <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-notrafrik-gold shrink-0" />
