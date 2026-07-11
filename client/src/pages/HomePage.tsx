@@ -181,7 +181,7 @@ export default function HomePage() {
               {heroSubtitle}
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl">
+              <Link to="/services" className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl">
                 {copy.startJourney}
                 <ArrowRight className="w-5 h-5" />
               </Link>
@@ -356,7 +356,7 @@ export default function HomePage() {
             {copy.ctaText}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg">
+            <Link to="/services" className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg">
               {copy.ctaButton}
               <ArrowRight className="w-5 h-5" />
             </Link>
