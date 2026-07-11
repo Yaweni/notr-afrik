@@ -114,6 +114,8 @@ export default function HeroCarousel() {
     }
   }, [isTransitioning]);
 
+  const currentSlide = SLIDES[current];
+  const CurrentIcon = currentSlide.icon;
   const getTitle = (s: Slide) => (isFrench ? s.titleFr : s.title);
   const getSubtitle = (s: Slide) => (isFrench ? s.subtitleFr : s.subtitle);
   const getCta = (s: Slide) => (isFrench ? s.ctaFr : s.cta);
@@ -139,21 +141,21 @@ export default function HeroCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative flex flex-col justify-center">
         <div key={current} className="max-w-2xl animate-fade-in">
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/20">
-            <SLIDES[current].icon className="w-4 h-4 text-notrafrik-gold" />
-            <span className="text-notrafrik-gold">{getTitle(SLIDES[current])}</span>
+            <CurrentIcon className="w-4 h-4 text-notrafrik-gold" />
+            <span className="text-notrafrik-gold">{getTitle(currentSlide)}</span>
           </div>
           <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-6 drop-shadow-lg">
-            {getTitle(SLIDES[current])}
+            {getTitle(currentSlide)}
           </h1>
           <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-8 max-w-xl">
-            {getSubtitle(SLIDES[current])}
+            {getSubtitle(currentSlide)}
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
-              to={`/services#${SLIDES[current].id}`}
+              to={`/services#${currentSlide.id}`}
               className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl"
             >
-              {getCta(SLIDES[current])}
+              {getCta(currentSlide)}
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
@@ -203,7 +205,7 @@ export default function HeroCarousel() {
 
       {/* Photo credit (bottom-right, subtle) */}
       <div className="absolute bottom-2 right-3 text-[10px] text-white/40 z-10">
-        Photo: {SLIDES[current].imageCredit} / Unsplash
+        Photo: {currentSlide.imageCredit} / Unsplash
       </div>
     </section>
   );
