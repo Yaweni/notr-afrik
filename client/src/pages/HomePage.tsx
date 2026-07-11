@@ -22,24 +22,25 @@ import {
   MapPin,
   Package,
   Sparkles,
+  Quote,
 } from "lucide-react";
 import { useSiteContent, useDestinations, useTestimonials, useSuccessStories } from "../hooks/useApi";
 import { useI18n } from "../context/LanguageContext";
 
 // Sample data used when the backend isn't available (static-only deploy).
 const SAMPLE_DESTINATIONS = [
-  { id: "s1", code: "DE", name: "Allemagne", description: "Ausbildung, university studies and work — the most popular route for our candidates.", descriptionFr: "Ausbildung, etudes universitaires et travail — la voie la plus demandee par nos candidats." },
-  { id: "s2", code: "CA", name: "Canada", description: "Express Entry, study permits and family sponsorship pathways.", descriptionFr: "Entree Express, permis d'etudes et parrainage familial." },
-  { id: "s3", code: "US", name: "Etats-Unis", description: "Student visas (F-1), work visas and diversity lottery support.", descriptionFr: "Visas etudiant (F-1), visas de travail et loterie de la diversite." },
-  { id: "s4", code: "FR", name: "France", description: "Campus France procedures, student and family reunification visas.", descriptionFr: "Procedures Campus France, visas etudiant et regroupement familial." },
-  { id: "s5", code: "IT", name: "Italie", description: "Seasonal work, study and family visas across the Mediterranean.", descriptionFr: "Travail saisonnier, etudes et visas familiaux en Mediterranee." },
-  { id: "s6", code: "GB", name: "Royaume-Uni", description: "Student visas, skilled worker and language requirements guidance.", descriptionFr: "Visas etudiant, worker qualifie et exigences linguistiques." },
+  { id: "s1", code: "DE", name: "Allemagne", description: "Ausbildung, university studies and work — the most popular route for our candidates.", descriptionFr: "Ausbildung, etudes universitaires et travail — la voie la plus demandee par nos candidats.", image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&h=500&fit=crop&q=80&auto=format" },
+  { id: "s2", code: "CA", name: "Canada", description: "Express Entry, study permits and family sponsorship pathways.", descriptionFr: "Entree Express, permis d'etudes et parrainage familial.", image: "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?w=800&h=500&fit=crop&q=80&auto=format" },
+  { id: "s3", code: "US", name: "Etats-Unis", description: "Student visas (F-1), work visas and diversity lottery support.", descriptionFr: "Visas etudiant (F-1), visas de travail et loterie de la diversite.", image: "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=800&h=500&fit=crop&q=80&auto=format" },
+  { id: "s4", code: "FR", name: "France", description: "Campus France procedures, student and family reunification visas.", descriptionFr: "Procedures Campus France, visas etudiant et regroupement familial.", image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&h=500&fit=crop&q=80&auto=format" },
+  { id: "s5", code: "IT", name: "Italie", description: "Seasonal work, study and family visas across the Mediterranean.", descriptionFr: "Travail saisonnier, etudes et visas familiaux en Mediterranee.", image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&h=500&fit=crop&q=80&auto=format" },
+  { id: "s6", code: "GB", name: "Royaume-Uni", description: "Student visas, skilled worker and language requirements guidance.", descriptionFr: "Visas etudiant, worker qualifie et exigences linguistiques.", image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=500&fit=crop&q=80&auto=format" },
 ];
 
 const SAMPLE_TESTIMONIALS = [
-  { id: "t1", name: "Aline N.", country: "Allemagne", countryFr: "Allemagne", message: "I got my Ausbildung visa with NOTR-AFRIK's help — they guided every document.", messageFr: "J'ai obtenu mon visa Ausbildung grace a NOTR-AFRIK — chaque document guide." },
-  { id: "t2", name: "Brice K.", country: "Canada", countryFr: "Canada", message: "The team made the Express Entry process clear and stress-free.", messageFr: "L'equipe a rendu le processus d'Entree Express clair et sans stress." },
-  { id: "t3", name: "Cynthia M.", country: "France", countryFr: "France", message: "Thanks to the German courses, I passed my exam and got my visa.", messageFr: "Grace aux cours d'allemand, j'ai reussi mon examen et obtenu mon visa." },
+  { id: "t1", name: "Aline N.", country: "Allemagne", countryFr: "Allemagne", message: "I got my Ausbildung visa with NOTR-AFRIK's help — they guided every document.", messageFr: "J'ai obtenu mon visa Ausbildung grace a NOTR-AFRIK — chaque document guide.", avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80&auto=format" },
+  { id: "t2", name: "Brice K.", country: "Canada", countryFr: "Canada", message: "The team made the Express Entry process clear and stress-free.", messageFr: "L'equipe a rendu le processus d'Entree Express clair et sans stress.", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80&auto=format" },
+  { id: "t3", name: "Cynthia M.", country: "France", countryFr: "France", message: "Thanks to the German courses, I passed my exam and got my visa.", messageFr: "Grace aux cours d'allemand, j'ai reussi mon examen et obtenu mon visa.", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80&auto=format" },
 ];
 
 const SAMPLE_STORIES = [
@@ -269,18 +270,27 @@ export default function HomePage() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {destinations.slice(0, 6).map((dest: any) => (
-                <Link to={`/destinations/${dest.id}`} key={dest.id} className="card group hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-notrafrik-navy to-notrafrik-light flex items-center justify-center text-xl font-bold text-white">
-                      {dest.code}
+                <Link to={`/destinations/${dest.id}`} key={dest.id} className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  {dest.image && (
+                    <div className="relative h-40 overflow-hidden">
+                      <img
+                        src={dest.image}
+                        alt={dest.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                      <div className="absolute bottom-3 left-4 w-10 h-10 rounded-lg bg-white/90 backdrop-blur-sm flex items-center justify-center text-sm font-bold text-notrafrik-navy shadow-lg">
+                        {dest.code}
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-heading font-semibold text-lg text-card-foreground">{dest.name}</h3>
+                  )}
+                  <div className="p-6">
+                    <h3 className="font-heading font-semibold text-lg text-card-foreground mb-2">{dest.name}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{getLocalizedValue(dest.description, dest.descriptionFr)}</p>
+                    <div className="mt-4 text-primary dark:text-notrafrik-gold text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      {copy.learnMore} <ArrowRight className="w-4 h-4" />
                     </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{getLocalizedValue(dest.description, dest.descriptionFr)}</p>
-                  <div className="mt-4 text-primary dark:text-notrafrik-gold text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                    {copy.learnMore} <ArrowRight className="w-4 h-4" />
                   </div>
                 </Link>
               ))}
@@ -298,17 +308,27 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {testimonials.map((t: any) => (
-              <div key={t.id} className="card">
-                <div className="flex gap-1 mb-3">
+              <div key={t.id} className="card relative">
+                <Quote className="absolute top-4 right-4 w-10 h-10 text-notrafrik-gold/20" />
+                <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-notrafrik-gold text-notrafrik-gold" />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">&ldquo;{getLocalizedValue(t.message, t.messageFr)}&rdquo;</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6 italic">&ldquo;{getLocalizedValue(t.message, t.messageFr)}&rdquo;</p>
                 <div className="flex items-center gap-3 pt-4 border-t border-border">
-                  <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
-                    {t.name.charAt(0)}
-                  </div>
+                  {t.avatar ? (
+                    <img
+                      src={t.avatar}
+                      alt={t.name}
+                      className="w-11 h-11 rounded-full object-cover ring-2 ring-notrafrik-gold/30"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-11 h-11 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                      {t.name.charAt(0)}
+                    </div>
+                  )}
                   <div>
                     <div className="text-sm font-semibold text-card-foreground">{t.name}</div>
                     <div className="text-xs text-muted-foreground">
@@ -346,7 +366,12 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ─────────────────────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-r from-notrafrik-navy to-notrafrik-light text-white relative overflow-hidden">
+      <section
+        className="py-24 text-white relative overflow-hidden bg-cover bg-center"
+        style={{
+          backgroundImage: "url(https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=1920&h=800&fit=crop&q=80&auto=format)",
+        }}
+      >
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
         <div className="max-w-4xl mx-auto px-4 text-center relative">
           <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
