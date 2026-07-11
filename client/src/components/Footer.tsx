@@ -14,7 +14,7 @@ export default function Footer() {
         services: "Services",
         getStarted: "Commencer",
         servicesTitle: "Services",
-        serviceItems: ["Cours de langue", "Accompagnement Visa", "Auto-ecole", "Contrats internationaux", "Programme d'affiliation", "Suivi personnalise"],
+        serviceItems: ["Visas & Mobilite", "Billetterie & Reservations", "Tourisme & Sejours", "Import-Export", "Securite & Equipements", "Evenementiel"],
         contact: "Contact",
         location: "Douala, Cameroun",
         locations: ["Bonaberi", "Deido", "Makepe"],
@@ -34,7 +34,7 @@ export default function Footer() {
         services: "Services",
         getStarted: "Get Started",
         servicesTitle: "Services",
-        serviceItems: ["Language Courses", "Visa Support", "Driving School", "International Contracts", "Affiliate Program", "Personalized Tracking"],
+        serviceItems: ["Visas & Mobility", "Ticketing & Reservations", "Tourism & Trips", "Import-Export", "Security & Equipment", "Event Services"],
         contact: "Contact",
         location: "Douala, Cameroon",
         locations: ["Bonaberi", "Deido", "Makepe"],
@@ -65,7 +65,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/destinations" className="hover:text-notrafrik-gold transition-colors">{copy.destinations}</Link></li>
               <li><Link to="/courses" className="hover:text-notrafrik-gold transition-colors">{copy.courses}</Link></li>
-              <li><Link to="/procedures" className="hover:text-notrafrik-gold transition-colors">{copy.services}</Link></li>
+              <li><Link to="/services" className="hover:text-notrafrik-gold transition-colors">{copy.services}</Link></li>
               <li><Link to="/register" className="hover:text-notrafrik-gold transition-colors">{copy.getStarted}</Link></li>
             </ul>
           </div>

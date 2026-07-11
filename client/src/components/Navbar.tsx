@@ -104,7 +104,7 @@ export default function Navbar() {
             <Link to="/courses" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.courses}
             </Link>
-            <Link to="/procedures" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
+            <Link to="/services" className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary">
               {copy.services}
             </Link>
               </>
@@ -195,7 +195,7 @@ export default function Navbar() {
             <Link to="/courses" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.courses}
             </Link>
-            <Link to="/procedures" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
+            <Link to="/services" className="block rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>
               {copy.services}
             </Link>
             <div className="mt-3 space-y-3 border-t border-border px-4 py-3">

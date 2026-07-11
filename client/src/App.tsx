@@ -12,6 +12,7 @@ import DestinationDetailPage from "./pages/DestinationDetailPage";
 import PathwayDetailPage from "./pages/PathwayDetailPage";
 import CoursesPage from "./pages/CoursesPage";
 import ProceduresPage from "./pages/ProceduresPage";
+import ServicesPage from "./pages/ServicesPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProcedureDetailPage from "./pages/ProcedureDetailPage";
 import NotificationsPage from "./pages/NotificationsPage";
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/destinations/:id/pathways/:pathwaySlug" element={<PathwayDetailPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/procedures" element={<ProceduresPage />} />
+        <Route path="/services" element={<ServicesPage />} />
       </Route>
 
       {/* Protected (logged in) */}
