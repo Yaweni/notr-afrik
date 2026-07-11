@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HeroCarousel from "../components/HeroCarousel";
 import {
   GraduationCap,
   FileCheck,
@@ -14,9 +15,13 @@ import {
   CheckCircle2,
   Clock,
   Headphones,
-  Target,
   ThumbsUp,
   BadgeCheck,
+  Plane,
+  Ticket,
+  MapPin,
+  Package,
+  Sparkles,
 } from "lucide-react";
 import { useSiteContent, useDestinations, useTestimonials, useSuccessStories } from "../hooks/useApi";
 import { useI18n } from "../context/LanguageContext";
@@ -144,62 +149,57 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-notrafrik-navy via-notrafrik-light to-notrafrik-navy text-white">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMjUiPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjEiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-40" />
-        {/* World map outline SVG */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.06]" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M200 100 Q300 50 400 100 Q500 50 600 100 Q700 150 650 250" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M100 150 Q200 80 300 140 Q400 120 500 160 Q550 200 600 180" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M50 250 Q150 150 250 230 Q350 200 450 250 Q550 220 600 280" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M100 350 Q200 280 300 340 Q400 300 500 350 Q600 330 650 380" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M300 50 Q350 30 400 50" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M480 60 Q520 40 550 60" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M580 120 Q620 140 600 170" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M80 200 Q60 240 80 280" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M680 220 Q720 260 680 300" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M150 380 Q120 420 150 450" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <path d="M500 380 Q520 420 500 450" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <circle cx="380" cy="200" r="20" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <circle cx="480" cy="160" r="12" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <circle cx="150" cy="280" r="15" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <circle cx="600" cy="260" r="10" stroke="currentColor" strokeWidth="1" fill="none"/>
-          <circle cx="420" cy="340" r="14" stroke="currentColor" strokeWidth="1" fill="none"/>
-        </svg>
+      {/* ── Hero Carousel + Stats ──────────────────────────────── */}
+      <HeroCarousel />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-notrafrik-gold/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-notrafrik-gold/30">
-              <GraduationCap className="w-4 h-4 text-notrafrik-gold" />
-              <span className="text-notrafrik-gold">{copy.heroBadge}</span>
-            </div>
-            <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-              {heroTitle}{" "}
-              <span className="text-notrafrik-gold">{copy.heroTitleEmphasis}</span>
-            </h1>
-            <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-10 max-w-2xl">
-              {heroSubtitle}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/services" className="inline-flex items-center gap-2 px-8 py-4 bg-notrafrik-gold text-notrafrik-navy font-bold rounded-xl hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl">
-                {copy.startJourney}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link to="/courses" className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/20">
-                <BookOpen className="w-5 h-5" />
-                {copy.browseCourses}
-              </Link>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-16 border-t border-white/10">
+      {/* Stats */}
+      <section className="relative bg-gradient-to-r from-notrafrik-navy to-notrafrik-light text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {copy.stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-3xl md:text-4xl font-heading font-extrabold text-notrafrik-gold">{s.num}</div>
                 <div className="text-sm text-white/50 mt-1">{s.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Service Category Quick Access */}
+      <section className="py-10 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-heading text-xl font-bold text-foreground">
+              {isFrench ? "Nos services" : "Our Services"}
+            </h2>
+            <Link to="/services" className="text-sm font-semibold text-primary hover:text-notrafrik-gold flex items-center gap-1 transition-colors">
+              {isFrench ? "Voir tout" : "View all"} <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { id: "visas", icon: Plane, label: "Visas", labelFr: "Visas", color: "bg-notrafrik-navy" },
+              { id: "ticketing", icon: Ticket, label: "Tickets", labelFr: "Billets", color: "bg-notrafrik-gold" },
+              { id: "tourism", icon: MapPin, label: "Tourism", labelFr: "Tourisme", color: "bg-emerald-600" },
+              { id: "logistics", icon: Package, label: "Logistics", labelFr: "Logistique", color: "bg-purple-600" },
+              { id: "security", icon: Shield, label: "Security", labelFr: "Sécurité", color: "bg-notrafrik-red" },
+              { id: "events", icon: Sparkles, label: "Events", labelFr: "Événements", color: "bg-cyan-600" },
+            ].map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <Link
+                  key={cat.id}
+                  to={`/services#${cat.id}`}
+                  className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className={`w-10 h-10 ${cat.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xs font-semibold text-card-foreground text-center">{isFrench ? cat.labelFr : cat.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
